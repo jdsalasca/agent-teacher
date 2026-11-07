@@ -86,6 +86,9 @@ Reglas tipográficas sustentadas en evidencia: cuerpo de 19,5 px, interlineado 1
 | Derivar el concepto antes de nombrarlo | Efecto de generación y autoexplicación (d ≈ 0,54-0,56) |
 | Dificultad calibrada | Bjork: las dificultades deseables mejoran la retención aunque empeoren la fluidez percibida |
 | Una idea por sección | Carga cognitiva (Sweller) |
+| Cuerpo 19,5 px e interlineado 1,6 | Rello, Pielot & Marcos (2016): mejor comprensión desde 18 pt |
+
+Los papers están en [`papers/`](papers/), con un resumen de qué sostiene cada uno y su entrada BibTeX. La decisión de no migrar a TypeScript está en [`docs/decision-motor.md`](docs/decision-motor.md).
 
 ## Licencia
 
