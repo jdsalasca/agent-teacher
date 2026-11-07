@@ -29,7 +29,8 @@ python teacher.py leccion.md --salida Guia_Tema.html \
 ## Trabajo
 
 1. **Copiar la estructura del ejemplo, no inventarla.** `ejemplo.md` pasa el validador; una guía nueva debería parecerse.
-2. **Validar antes de entregar.** `--validar` y corregir los errores. Los avisos se leen; si se ignoran, se sabe por qué.
+2. **Usar el vocabulario de vistas.** `{problema}`, `{historia}`, `{llegar}`… salen de `contrato.json`; un sufijo inventado es un error. `--catalogo` los lista.
+3. **Validar antes de entregar.** `--validar` y corregir los errores. Los avisos se leen; si se ignoran, se sabe por qué.
 3. **Verificación visual obligatoria.** Abrir el HTML y revisar portada, fórmulas, tablas, desgloses y figuras. Si algo se ve mal, se corrige y se regenera.
 4. **Un tema por guía.** Dos ideas centrales son dos guías.
 5. **Las guías se guardan en la carpeta del curso**, nunca aquí.

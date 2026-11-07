@@ -590,13 +590,17 @@ def render_bloque(tipo: str, lineas: list[str]) -> str:
 BASE_DIR: Path | None = None
 
 
-def convertir(md: str) -> tuple[str, str, str, list[tuple[str, str]]]:
-    """Devuelve (titulo, idea, cuerpo_html, secciones[(slug, titulo)])."""
+def convertir(
+    md: str, vistas: dict[str, dict] | None = None
+) -> tuple[str, str, str, list[tuple[str, str, str]]]:
+    """Devuelve (titulo, idea, cuerpo_html, secciones[(slug, titulo, vista)])."""
+    vistas = vistas or {}
     lineas = md.splitlines()
     titulo = ""
     idea = ""
-    secciones: list[tuple[str, str]] = []
+    secciones: list[tuple[str, str, str]] = []
     cuerpo: list[str] = []
+    abierta = False
 
     i = 0
     en_texto: list[str] | None = None
@@ -735,13 +739,24 @@ def convertir(md: str) -> tuple[str, str, str, list[tuple[str, str]]]:
             m_vista = re.search(r"\{(\w+)\}\s*$", bruto)
             vista = m_vista.group(1).lower() if m_vista else "concepto"
             texto = re.sub(r"\s*\{\w+\}\s*$", "", bruto).strip()
+            info = vistas.get(vista, {})
+            estandar = info.get("titulo", "")
+            if not texto:
+                texto = estandar or "Sección"
             num = len(secciones) + 1
-            cuerpo.append("</section>")
+            if abierta:
+                cuerpo.append("</div></section>")
+            cuerpo.append(f'<section class="tarjeta revelar" id="{slug(texto)}">')
+            if estandar and estandar != texto:
+                cuerpo.append(f'<p class="vista">{inline(estandar)}</p>')
             cuerpo.append(
-                f'<section class="tarjeta revelar" id="{slug(texto)}">'
-                f'<h2><span class="num">{num:02d}</span>{inline(texto)}</h2>'
+                f'<h2><span class="num">{num:02d}</span>{inline(texto)}'
+                '<button class="plegar" type="button" aria-expanded="true" '
+                'aria-label="Plegar sección" title="Plegar sección">&#8211;</button></h2>'
+                '<div class="cuerpo">'
             )
             secciones.append((slug(texto), texto, vista))
+            abierta = True
             i += 1
             continue
 
@@ -814,7 +829,8 @@ def convertir(md: str) -> tuple[str, str, str, list[tuple[str, str]]]:
         cuerpo.append("<pre><code>" + html.escape("\n".join(codigo)) + "</code></pre>")
     if bloque_tipo:
         cuerpo.append(render_bloque(bloque_tipo, bloque_lineas))
-    cuerpo.append("</section>")
+    if abierta:
+        cuerpo.append("</div></section>")
 
     return titulo, idea, "\n".join(cuerpo), secciones
 
@@ -855,6 +871,16 @@ SCRIPT = """<script>
     }, { rootMargin: "-15% 0px -70% 0px" });
     destinos.forEach(function (s) { if (s) espia.observe(s); });
   }
+
+  document.querySelectorAll(".plegar").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var tarjeta = b.closest(".tarjeta");
+      var plegada = tarjeta.classList.toggle("plegada");
+      b.setAttribute("aria-expanded", String(!plegada));
+      b.setAttribute("aria-label", plegada ? "Desplegar sección" : "Plegar sección");
+      b.textContent = plegada ? "+" : "–";
+    });
+  });
 })();
 </script>"""
 
@@ -875,21 +901,33 @@ def cargar_css(acento: str) -> str:
     )
 
 
-def construir(md: str, titulo: str, subtitulo: str, materia: str, acento: str) -> str:
-    titulo_md, idea, cuerpo, secciones = convertir(md)
+def construir(
+    md: str,
+    titulo: str,
+    subtitulo: str,
+    materia: str,
+    acento: str,
+    contrato: dict,
+) -> str:
+    titulo_md, idea, cuerpo, secciones = convertir(md, contrato.get("vistas", {}))
     titulo = titulo or titulo_md or "Guía de estudio"
     hoy = dt.date.today().strftime("%d/%m/%Y")
     acento_hex = acento.lstrip("#")
 
-    vistas = {
+    mapa = contrato.get("vistas", {})
+    grupos = {
         "concepto": "Concepto",
         "historia": "Historia",
         "practica": "Práctica",
         "transferencia": "Transferencia",
     }
     nav: list[str] = []
-    for clave, etiqueta in vistas.items():
-        propias = [(s, t) for s, t, v in secciones if v == clave]
+    for grupo, etiqueta in grupos.items():
+        propias = [
+            (s, t)
+            for s, t, v in secciones
+            if mapa.get(v, {}).get("grupo", "concepto") == grupo
+        ]
         if not propias:
             continue
         nav.append(f'<p class="grupo">{etiqueta}</p>')
@@ -932,7 +970,7 @@ def construir(md: str, titulo: str, subtitulo: str, materia: str, acento: str) -
 
     {idea_html}
 
-    {cuerpo.lstrip().removeprefix("</section>")}
+    {cuerpo.lstrip()}
 
     <p class="pie">
       Guía generada con teacher · práctica de recuperación activa: responde antes de abrir cada respuesta.
@@ -1110,6 +1148,17 @@ def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
         else:
             salida.append(("ok", f"{nombre} presente"))
 
+    conocidas = set(contrato.get("vistas", {})) | {"concepto"}
+    for s in doc["secciones"]:
+        if s["vista"] not in conocidas:
+            salida.append(
+                (
+                    "error",
+                    f"«{s['titulo']}» (línea {s['linea']}): vista «{s['vista']}» no existe; "
+                    f"usa una de: {', '.join(sorted(conocidas))}",
+                )
+            )
+
     # --- historia: relato, no cronología ---
     for s in vistas("historia"):
         if s["vinietas"]:
@@ -1268,6 +1317,9 @@ def imprimir_catalogo(contrato: dict) -> None:
     for k, v in m.items():
         print(f"- {k}: {v}")
     print(f"\n# Obligatorios\n\n{', '.join(contrato['obligatorios'])}")
+    print("\n# Vistas\n")
+    for nombre, v in contrato.get("vistas", {}).items():
+        print(f"- `{{{nombre}}}` — {v['titulo']} · grupo {v['grupo']}: {v['para']}")
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1320,7 +1372,9 @@ def main(argv: list[str] | None = None) -> int:
     if not args.salida:
         ap.error("falta --salida")
 
-    salida = construir(md, args.titulo, args.subtitulo, args.materia, args.acento)
+    salida = construir(
+        md, args.titulo, args.subtitulo, args.materia, args.acento, contrato
+    )
     destino = Path(args.salida)
     destino.parent.mkdir(parents=True, exist_ok=True)
     destino.write_text(salida, encoding="utf-8")

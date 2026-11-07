@@ -2,7 +2,8 @@
 
 Convierte un tema en una **guía HTML de estudio** que se puede leer, practicar, repasar y recordar. No es un resumen bonito: es una estructura diseñada con la evidencia sobre aprendizaje humano.
 
-- Menú lateral con cuatro vistas: **Concepto · Historia · Práctica · Transferencia**.
+- Menú lateral con cuatro grupos: **Concepto · Historia · Práctica · Transferencia**, y un vocabulario fijo de doce secciones (`{problema}`, `{historia}`, `{concepto}`, `{llegar}`, `{errores}`, `{aplicacion}`, `{metodos}`, `{miradas}`, `{escenarios}`, `{campos}`, `{cierre}`, `{practica}`).
+- Cada sección se **pliega** con un clic, para repasar sin recorrer toda la guía.
 - Escalera **«cómo llegar al concepto»**: seis pasos que derivan la idea de los datos, en vez de anunciarla.
 - Fórmulas con **LaTeX** (KaTeX), figuras incrustadas y tablas.
 - Práctica de **recuperación activa** con respuestas ocultas.
@@ -42,10 +43,11 @@ python teacher.py leccion.md \
 Qué podrá hacer el estudiante al terminar.
 :::
 
-## El problema {concepto}
-## De dónde salió {historia}
-## Cómo llegar a la idea {practica}
-## Llévatelo {transferencia}
+## El problema {problema}
+## El concepto {concepto}
+## Historia del concepto {historia}
+## Cómo llegar al concepto {llegar}
+## Qué llevarte de este tema {cierre}
 
 Q: Pregunta de recuperación.
 R: Respuesta oculta.

@@ -10,7 +10,7 @@ Que puedas leer la factura de una bomba, entender por qué el número del medido
 Multiplicar, dividir y leer una tabla. Si sabes que un bombillo de 100 W encendido dos horas gasta 200 vatios-hora, ya tienes la mitad del camino.
 :::
 
-## La escena {concepto}
+## La escena {problema}
 
 Son las cinco y cuarenta de la mañana en Suesca y el agua todavía está fría. El agricultor abre la válvula, la bomba carraspea una vez y arranca. Dos horas después la apaga, y esa noche, cuando llega la factura, hace la cuenta que hacemos todos: «ciento veinte vatios por dos horas, doscientos cuarenta».
 
@@ -45,6 +45,14 @@ $$\Delta t = \frac{2}{n}$$
 Cuatro rebanadas son de media hora. Cien rebanadas son de 72 segundos, tan finas que dentro de cada una la potencia casi no cambia. Esa es toda la gracia: si el pedazo es pequeño, la potencia se puede tratar como si fuera constante.
 
 El ancho es también lo que convierte vatios en vatios-hora. Un vatio suelto no dice nada; hay que decir cuánto tiempo estuvo encendido. Multiplicar la potencia por el ancho es exactamente ese «cuánto tiempo».
+
+## Dos maneras de mirar lo mismo {miradas}
+
+La escena del agricultor y la fórmula dicen lo mismo desde dos orillas. Desde la física, el área bajo la curva es la energía que entró al motor: cada rectángulo es un rato de consumo. Desde la geometría, es simplemente el área de una región limitada por una curva, y el método no sabe de vatios.
+
+Esa doble lectura es la que vuelve útil el concepto: lo que aquí se mide en vatios-hora, en otra parte se mide en metros recorridos, en litros llenados o en pesos cobrados. El dibujo no cambia; cambia la unidad.
+
+Y hay una tercera mirada, la del que factura: para él no importa el valor exacto sino cuánto se puede equivocar sin que la cuenta quede mal. De ahí sale la pregunta por el error, que aparece más adelante.
 
 ## El primer intento: un solo pedazo {concepto}
 
@@ -81,7 +89,7 @@ Riemann cambió una sola cosa: en vez de exigir continuidad, exigió que las sum
 
 La idea de sumar pedazos era antiquísima: Arquímedes calculaba áreas así en el siglo III antes de Cristo, y Leibniz había inventado el símbolo $\int$ en 1675 como una «S» alargada de *summa*. Lo que Riemann agregó fue el criterio para saber cuándo esa suma vale. Por eso lleva su nombre y no el de Leibniz.
 
-## Cómo llegamos a llamarlo convergencia {practica}
+## Cómo llegamos a llamarlo convergencia {llegar}
 
 Mira la tabla sin creerle nada. Solo léela.
 
@@ -125,7 +133,7 @@ Y si quieres ver la aritmética de cada fila, se abre aquí:
 - Error: 0,20 W·h (0,09 %)
 :::
 
-## Tres formas de hacer la misma suma {practica}
+## Tres formas de hacer la misma suma {metodos}
 
 ::: enfoques
 - **Rectángulos por izquierda** — la altura se toma al inicio de cada pedazo. Simple, y subestima cuando la función crece. Es la del ejercicio.
@@ -133,7 +141,7 @@ Y si quieres ver la aritmética de cada fila, se abre aquí:
 - **Simpson** — una parábola cada dos pedazos. Con 20 pedazos el error es de millonésimas: se usa para facturar, no para decidir.
 :::
 
-## El procedimiento, en orden {practica}
+## El procedimiento, en orden {aplicacion}
 
 ::: pasos
 1. Calcula el ancho: $\Delta t = 2/4 = 0{,}5$ h.
@@ -163,7 +171,7 @@ R: Por abajo, porque toma la altura en el extremo izquierdo y la función crece.
 Q: ¿Y si la bomba arrancara en 120 y bajara a 100?
 R: La suma por izquierda pasaría a sobreestimar. El método no cambia; cambia el signo del error.
 
-## Para que no se te olvide {practica}
+## Para que no se te olvide {cierre}
 
 ::: plan
 - Hoy — Leer y responder las preguntas sin mirar.

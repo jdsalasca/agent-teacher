@@ -118,6 +118,24 @@ body {
 }
 .tarjeta h3 { font-size: 19.5px; margin: t.$s3 0 t.$s1; color: #3a2c22; }
 
+/* nombre estándar de la sección, cuando el título es propio */
+.tarjeta .vista {
+  margin: 0 0 4px; font-family: t.$mono; font-size: 11px;
+  letter-spacing: .14em; text-transform: uppercase; color: t.$terracota;
+}
+.tarjeta h2 { position: relative; padding-right: 42px; }
+.plegar {
+  position: absolute; right: 0; top: 2px; width: 28px; height: 28px;
+  display: grid; place-items: center; cursor: pointer;
+  font-family: t.$mono; font-size: 17px; line-height: 1;
+  color: t.$suave; background: t.$papel; border: 1px solid t.$linea;
+  border-radius: 8px; transition: color .15s, border-color .15s;
+}
+.plegar:hover { color: t.$terracota; border-color: t.$terracota; }
+.plegar:focus-visible { outline: 2px solid t.$terracota; outline-offset: 2px; }
+.tarjeta.plegada .cuerpo { display: none; }
+.tarjeta.plegada h2 { margin-bottom: 0; border-bottom-color: transparent; }
+
 p { margin: 0 0 t.$s2; }
 ul, ol { margin: 0 0 t.$s3; padding-left: 24px; }
 li { margin-bottom: 5px; }
@@ -343,6 +361,8 @@ figcaption { margin-top: 8px; font-size: 13.5px; color: t.$suave; font-style: it
   .lateral, .progreso { display: none; }
   .layout { display: block; max-width: none; padding: 0; }
   .tarjeta { box-shadow: none; page-break-inside: avoid; }
+  .tarjeta .cuerpo { display: block !important; }
+  .plegar { display: none; }
   details.pregunta { break-inside: avoid; }
   details.pregunta .respuesta { display: block; }
 }

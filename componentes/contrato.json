@@ -31,6 +31,68 @@
     "en el mundo actual"
   ],
   "marcadores": ["TODO", "TBD", "PENDIENTE", "lorem ipsum", "XXX", "escribe aquí"],
+  "vistas": {
+    "problema": {
+      "titulo": "El problema",
+      "grupo": "concepto",
+      "para": "La situación concreta que obliga a inventar el concepto. Sin símbolos todavía."
+    },
+    "concepto": {
+      "titulo": "El concepto",
+      "grupo": "concepto",
+      "para": "La idea central: qué es, qué dice la fórmula y por qué."
+    },
+    "miradas": {
+      "titulo": "Diferentes miradas al problema",
+      "grupo": "concepto",
+      "para": "Otras formas de interpretar la misma situación."
+    },
+    "historia": {
+      "titulo": "Historia del concepto",
+      "grupo": "historia",
+      "para": "Quién lo pensó, qué problema tenía enfrente y qué cambió."
+    },
+    "llegar": {
+      "titulo": "Cómo llegar al concepto",
+      "grupo": "practica",
+      "para": "Derivarlo de los datos, paso a paso, antes de nombrarlo."
+    },
+    "errores": {
+      "titulo": "Cómo no llegar al concepto",
+      "grupo": "practica",
+      "para": "Los caminos que parecen razonables y llevan al resultado equivocado."
+    },
+    "aplicacion": {
+      "titulo": "Cómo usar el concepto en el problema",
+      "grupo": "practica",
+      "para": "El procedimiento para resolver, aplicado al caso original."
+    },
+    "metodos": {
+      "titulo": "Diferentes formas de llegar al mismo concepto",
+      "grupo": "practica",
+      "para": "Dos o tres métodos y cuándo conviene cada uno."
+    },
+    "practica": {
+      "titulo": "Practica lo aprendido",
+      "grupo": "practica",
+      "para": "Preguntas de recuperación activa, con la respuesta oculta."
+    },
+    "escenarios": {
+      "titulo": "El concepto en otros escenarios",
+      "grupo": "transferencia",
+      "para": "El mismo mecanismo en situaciones cercanas."
+    },
+    "campos": {
+      "titulo": "El concepto aplicado en otros problemas de diferentes campos",
+      "grupo": "transferencia",
+      "para": "Dónde más trabaja esta idea, fuera del curso."
+    },
+    "cierre": {
+      "titulo": "Qué llevarte de este tema",
+      "grupo": "transferencia",
+      "para": "Lo que hay que retener y el plan para no olvidarlo."
+    }
+  },
   "componentes": {
     "objetivo": {
       "sintaxis": "::: objetivo",

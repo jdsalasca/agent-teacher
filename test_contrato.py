@@ -17,7 +17,7 @@ FLOJA = """# Guía floja
 
 > Una idea.
 
-## Introducción {concepto}
+## Introducción {inventada}
 
 Es importante destacar que la integral es muy importante en el mundo actual.
 
@@ -58,7 +58,15 @@ with tempfile.TemporaryDirectory() as tmp:
     mala = validar(floja)
 
 assert mala.returncode == 1, mala.stdout
-for falta in ("objetivo", "llegar", "plan", "historia", "desglose", "TODO"):
+for falta in (
+    "objetivo",
+    "llegar",
+    "plan",
+    "historia",
+    "desglose",
+    "TODO",
+    "inventada",
+):
     assert falta in mala.stdout, f"no reportó «{falta}»"
 
 print("ok: el contrato distingue una guía completa de una floja")
