@@ -143,6 +143,26 @@ Riemann cambió una sola cosa: en vez de exigir continuidad, exigió que las sum
 
 La idea de sumar pedazos era antiquísima: Arquímedes calculaba áreas así en el siglo III antes de Cristo, y Leibniz había inventado el símbolo $\int$ en 1675 como una «S» alargada de *summa*. Lo que Riemann agregó fue el criterio para saber cuándo esa suma vale. Por eso lleva su nombre y no el de Leibniz.
 
+::: autores
+## Newton
+Físico y matemático inglés, 1643-1727.
+Llamó fluxión a la rapidez con que fluye una cantidad y fluente a la cantidad misma; su cálculo servía para ir y venir entre las dos.
+
+Escribió el método durante el encierro de 1665 en Woolsthorpe, cuando Cambridge cerró por la peste.
+
+## Cauchy
+Matemático francés, 1789-1857.
+Definió la integral como límite de sumas en 1823, exigiendo continuidad de la función.
+
+Su definición puso el rigor que faltaba, pero dejó fuera las funciones con saltos.
+
+## Riemann
+Matemático alemán, 1826-1866.
+Generalizó la integral en 1854 al cambiar la exigencia: en vez de continuidad, pidió que las sumas converjan.
+
+Murió a los 39 años, antes de que su definición se volviera estándar.
+:::
+
 ## Cómo llegamos a llamarlo convergencia {llegar}
 
 Mira la tabla sin creerle nada. Solo léela.

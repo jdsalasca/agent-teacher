@@ -403,14 +403,24 @@ def inline(texto: str) -> str:
     t = html.escape(texto)
     t = re.sub(r"`([^`]+)`", r"<code>\1</code>", t)
     t = re.sub(r"\$([^$]+)\$", r'<span class="math">$\1$</span>', t)
-    t = re.sub(
-        r"==([^=]+)==",
-        lambda m: (
-            f'<a class="term" href="#ficha-{slug(m.group(1))}" '
-            f'data-ficha="{slug(m.group(1))}">{m.group(1)}</a>'
-        ),
-        t,
-    )
+
+    def _marca(m):
+        clave = slug(m.group(1))
+        ficha = FICHAS.get(clave)
+        boton = (
+            f'<button type="button" class="term" data-ficha="{clave}" '
+            f'aria-expanded="false" title="Ver la definición">{m.group(1)}</button>'
+        )
+        if not ficha:
+            return boton
+        corto = next((l.strip() for l in ficha["lineas"] if l.strip()), "")
+        respaldo = (
+            f'<span class="ficha-inline"><strong>{html.escape(ficha["nombre"])}</strong> '
+            f"<span>{html.escape(corto)}</span></span>"
+        )
+        return f'<span class="term-wrap">{boton}{respaldo}</span>'
+
+    t = re.sub(r"==([^=]+)==", _marca, t)
     t = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", t)
     t = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"<em>\1</em>", t)
     return t
@@ -1137,12 +1147,14 @@ SCRIPT = """<script>
 
   var plantillaFichas = document.getElementById("fichas");
   var fichaAbierta = null;
+  var termAbierto = null;
 
   function cerrarFicha() {
     if (fichaAbierta) { fichaAbierta.remove(); fichaAbierta = null; }
+    if (termAbierto) { termAbierto.setAttribute("aria-expanded", "false"); termAbierto = null; }
   }
 
-  document.querySelectorAll("a.term").forEach(function (enlace) {
+  document.querySelectorAll(".term").forEach(function (enlace) {
     enlace.addEventListener("click", function (ev) {
       if (!plantillaFichas) return;
       var datos = plantillaFichas.content.querySelector(
@@ -1179,6 +1191,8 @@ SCRIPT = """<script>
         });
       }
       fichaAbierta = caja;
+      termAbierto = enlace;
+      enlace.setAttribute("aria-expanded", "true");
     });
   });
 

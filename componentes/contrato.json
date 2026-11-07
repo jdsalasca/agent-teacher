@@ -10,7 +10,7 @@
     "parrafos_concepto": 2,
     "palabras": 700
   },
-  "obligatorios": ["objetivo", "prerequisito", "dominio", "historia", "llegar", "plan", "transferencia", "fuentes"],
+  "obligatorios": ["objetivo", "prerequisito", "dominio", "historia", "autores", "llegar", "plan", "transferencia", "fuentes"],
   "prohibido_meta": [
     "video",
     "vídeo",
@@ -239,6 +239,13 @@
       "para": "El vocabulario del tema, definido antes de usarlo: cada símbolo, cada palabra técnica, con su significado y su unidad.",
       "ejemplo": "Partición: los cortes t₀ < t₁ < … < tₙ. Subintervalo: lo que queda entre dos cortes. Ancho: tᵢ₊₁ − tᵢ.",
       "error": "Usar Δt durante tres párrafos sin decir qué mide, o llamar «rectángulo» a algo que no se definió."
+    },
+    "autores": {
+      "sintaxis": "::: autores  (cada autor empieza con ## Apellido)",
+      "forma": "bloque",
+      "para": "Fichas de los pensadores que sostienen el tema: nacionalidad, años, qué aportaron y un retrato si existe.",
+      "ejemplo": "## Newton\nFísico y matemático inglés, 1643-1727.\nLlamó fluxión a la rapidez con que fluye una cantidad.",
+      "error": "Listar nombres sin decir qué hicieron, o inventar biografías."
     },
     "fuentes": {
       "sintaxis": "## Fuentes y lecturas {fuentes}",
