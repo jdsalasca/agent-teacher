@@ -47,21 +47,30 @@ Qué podrá hacer el estudiante al terminar.
 ## Cómo llegar a la idea {practica}
 ## Llévatelo {transferencia}
 
-::: llegar
-- Observa: qué dicen los datos.
-- Compara: qué cambia.
-- Cuantifica: el patrón en números.
-- Nombra: el concepto.
-- Verifica: una comprobación.
-- Decide: qué se hace con eso.
-:::
-
 Q: Pregunta de recuperación.
 R: Respuesta oculta.
 ```
 
-Sufijos de vista: `{concepto}`, `{historia}`, `{practica}`, `{transferencia}`.
-Bloques: `objetivo`, `prerequisito`, `analogia`, `ejemplo`, `error`, `nota`, `tip`, `pasos`, `enfoques`, `plan`, `transferencia`, `llegar`.
+`python teacher.py --catalogo` lista todos los componentes con su sintaxis, un ejemplo y el error típico.
+
+## Contrato
+
+Una guía que no lo cumple **no se genera**. El motor mide el documento y dice qué falta:
+
+```bash
+python teacher.py leccion.md --validar
+```
+
+```
+[  ok  ] 11 secciones
+[  ok  ] historia: 4 párrafos, sin viñetas
+[ error] llegar (línea 48): 3 pasos, mínimo 4 — observa, compara, cuantifica, nombra
+[ error] línea 17: hay una tabla con cifras y ningún ::: desglose
+```
+
+Obligatorios hoy: `objetivo`, `prerequisito`, `historia`, `llegar`, `plan`, `transferencia`, más cuatro preguntas Q/R. Si una tabla trae cifras, exige `::: desglose`. Los umbrales viven en [`componentes/contrato.json`](componentes/contrato.json), que es la misma fuente que lee el validador.
+
+La razón de fondo: «sé claro y profundo» no es verificable; «la historia tiene al menos tres párrafos y cero viñetas» sí. Un agente nuevo no tiene que leer un manual: ejecuta, ve lo que falta y corrige.
 
 ## Sistema de diseño
 

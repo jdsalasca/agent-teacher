@@ -50,6 +50,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import html
+import json
 import re
 import sys
 import webbrowser
@@ -944,18 +945,361 @@ def construir(md: str, titulo: str, subtitulo: str, materia: str, acento: str) -
 """
 
 
+# ---------------------------------------------------------------------------
+# Contrato de componentes: una guía cumple o no se genera.
+# Las reglas viven en componentes/contrato.json, no en un manual que nadie lee.
+# ---------------------------------------------------------------------------
+
+CONTRATO_PATH = Path(__file__).resolve().parent / "componentes" / "contrato.json"
+
+
+def cargar_contrato() -> dict:
+    return json.loads(CONTRATO_PATH.read_text(encoding="utf-8"))
+
+
+def analizar(md: str) -> dict:
+    """Mide el documento: secciones, bloques, preguntas, tablas y viñetas."""
+    lineas = md.splitlines()
+    doc: dict = {"secciones": [], "bloques": [], "tablas": [], "preguntas": 0}
+    sec = None
+    bloque = None
+    estado = {"parrafo": False}
+
+    def cerrar_parrafo():
+        if estado["parrafo"] and sec is not None:
+            sec["parrafos"] += 1
+        estado["parrafo"] = False
+
+    i = 0
+    while i < len(lineas):
+        cruda = lineas[i]
+        d = cruda.strip()
+
+        if bloque is not None:
+            if d == ":::":
+                doc["bloques"].append(bloque)
+                bloque = None
+            else:
+                bloque["lineas"].append(cruda)
+            i += 1
+            continue
+
+        if d.startswith(":::") and len(d) > 3:
+            cerrar_parrafo()
+            bloque = {"tipo": d[3:].strip().lower(), "lineas": [], "linea": i + 1}
+            i += 1
+            continue
+
+        if d.startswith("```"):
+            cerrar_parrafo()
+            i += 1
+            while i < len(lineas) and not lineas[i].strip().startswith("```"):
+                i += 1
+            i += 1
+            continue
+
+        if d.startswith("## "):
+            cerrar_parrafo()
+            m = re.search(r"\{(\w+)\}\s*$", d)
+            vista = m.group(1).lower() if m else "concepto"
+            titulo = re.sub(r"\s*\{\w+\}\s*$", "", d[3:]).strip()
+            sec = {
+                "titulo": titulo,
+                "vista": vista,
+                "parrafos": 0,
+                "vinietas": 0,
+                "linea": i + 1,
+            }
+            doc["secciones"].append(sec)
+            i += 1
+            continue
+
+        if d.startswith("|"):
+            cerrar_parrafo()
+            inicio = i + 1
+            filas = []
+            while i < len(lineas) and lineas[i].strip().startswith("|"):
+                filas.append(lineas[i])
+                i += 1
+            doc["tablas"].append({"linea": inicio, "filas": filas})
+            continue
+
+        if d.startswith("Q:"):
+            cerrar_parrafo()
+            doc["preguntas"] += 1
+            i += 1
+            continue
+
+        if d.startswith("R:") or d.startswith("![") or d.startswith("# "):
+            cerrar_parrafo()
+            i += 1
+            continue
+
+        if re.match(r"^([-*]|\d+\.)\s", d):
+            cerrar_parrafo()
+            if sec is not None:
+                sec["vinietas"] += 1
+            i += 1
+            continue
+
+        if not d:
+            cerrar_parrafo()
+            i += 1
+            continue
+
+        if not d.startswith("###"):
+            estado["parrafo"] = True
+        i += 1
+
+    cerrar_parrafo()
+    return doc
+
+
+def _tabla_numerica(filas: list[str]) -> bool:
+    """Cierto si al menos dos filas de datos traen cifras."""
+    con_cifras = 0
+    for f in filas[1:]:
+        if re.match(r"^\|[\s:|-]+\|?$", f.strip()):
+            continue
+        celdas = [c.strip() for c in f.strip().strip("|").split("|")]
+        if any(re.search(r"\d", c) for c in celdas):
+            con_cifras += 1
+    return con_cifras >= 2
+
+
+def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
+    """Devuelve el informe como pares (nivel, mensaje)."""
+    doc = analizar(md)
+    m = contrato["minimos"]
+    salida: list[tuple[str, str]] = []
+
+    def bloques(tipo: str) -> list[dict]:
+        return [b for b in doc["bloques"] if b["tipo"] == tipo]
+
+    def vistas(nombre: str) -> list[dict]:
+        return [s for s in doc["secciones"] if s["vista"] == nombre]
+
+    # --- estructura ---
+    total = len(doc["secciones"])
+    if total < m["secciones"]:
+        salida.append(
+            (
+                "error",
+                f"{total} secciones; faltan ideas por desarrollar (mínimo {m['secciones']})",
+            )
+        )
+    elif total > m["secciones_max"]:
+        salida.append(
+            (
+                "aviso",
+                f"{total} secciones; por encima de {m['secciones_max']} se pierde el hilo",
+            )
+        )
+    else:
+        salida.append(("ok", f"{total} secciones"))
+
+    for nombre in contrato["obligatorios"]:
+        hay = bloques(nombre) or vistas(nombre)
+        if not hay:
+            salida.append(
+                (
+                    "error",
+                    f"falta «{nombre}» — {contrato['componentes'][nombre]['para']}",
+                )
+            )
+        else:
+            salida.append(("ok", f"{nombre} presente"))
+
+    # --- historia: relato, no cronología ---
+    for s in vistas("historia"):
+        if s["vinietas"]:
+            salida.append(
+                (
+                    "error",
+                    f"historia (línea {s['linea']}): {s['vinietas']} viñetas; cuéntala como relato",
+                )
+            )
+        if s["parrafos"] < m["parrafos_historia"]:
+            salida.append(
+                (
+                    "error",
+                    f"historia (línea {s['linea']}): {s['parrafos']} párrafos, "
+                    f"mínimo {m['parrafos_historia']} — quién, qué problema tenía, qué cambió",
+                )
+            )
+        elif not s["vinietas"]:
+            salida.append(("ok", f"historia: {s['parrafos']} párrafos, sin viñetas"))
+
+    # --- llegar: derivar antes de nombrar ---
+    for b in bloques("llegar"):
+        pasos = len([l for l in b["lineas"] if l.strip()])
+        if pasos < m["pasos_llegar"]:
+            salida.append(
+                (
+                    "error",
+                    f"llegar (línea {b['linea']}): {pasos} pasos, mínimo {m['pasos_llegar']} "
+                    "— observa, compara, cuantifica, nombra, verifica, decide",
+                )
+            )
+        else:
+            salida.append(("ok", f"llegar: {pasos} pasos"))
+
+    # --- desglose: cada caso con su aritmética ---
+    for b in bloques("desglose"):
+        casos, actual = [], None
+        for l in b["lineas"]:
+            if l.strip().startswith("## "):
+                actual = []
+                casos.append(actual)
+            elif actual is not None and l.strip():
+                actual.append(l)
+        if not casos:
+            salida.append(
+                (
+                    "error",
+                    f"desglose (línea {b['linea']}): sin casos «## ...»; cada cifra va aparte",
+                )
+            )
+            continue
+        flojos = [c for c in casos if len(c) < m["pasos_desglose"]]
+        if flojos:
+            salida.append(
+                (
+                    "error",
+                    f"desglose (línea {b['linea']}): {len(flojos)} caso(s) con menos de "
+                    f"{m['pasos_desglose']} operaciones; el lector no reconstruye el número",
+                )
+            )
+        else:
+            salida.append(
+                ("ok", f"desglose: {len(casos)} caso(s) con la cuenta completa")
+            )
+
+    # --- práctica ---
+    if doc["preguntas"] < m["preguntas"]:
+        salida.append(
+            (
+                "error",
+                f"{doc['preguntas']} preguntas Q/R, mínimo {m['preguntas']} para que se recuerde",
+            )
+        )
+    else:
+        salida.append(("ok", f"{doc['preguntas']} preguntas de recuperación"))
+
+    # --- cifras sin explicación ---
+    for cond in contrato["condiciones"]:
+        if cond["si"] == "tabla_numerica":
+            con_cifras = [t for t in doc["tablas"] if _tabla_numerica(t["filas"])]
+            if con_cifras and not bloques(cond["requiere"]):
+                salida.append(
+                    ("error", f"línea {con_cifras[0]['linea']}: {cond['mensaje']}")
+                )
+
+    # --- voz ---
+    lineas = md.splitlines()
+    for frase in contrato["frases_prohibidas"]:
+        for n, l in enumerate(lineas, start=1):
+            if frase in l.lower():
+                salida.append(
+                    (
+                        "aviso",
+                        f"línea {n}: «{frase}» no dice nada; escribe la cosa directamente",
+                    )
+                )
+                break
+
+    for marca in contrato["marcadores"]:
+        for n, l in enumerate(lineas, start=1):
+            golpe = marca in l if marca.isupper() else marca in l.lower()
+            if golpe:
+                salida.append(("error", f"línea {n}: marcador «{marca}» sin resolver"))
+                break
+
+    # --- densidad ---
+    palabras = len(re.findall(r"\w+", md))
+    if palabras < m["palabras"]:
+        salida.append(
+            (
+                "aviso",
+                f"{palabras} palabras; con menos de {m['palabras']} no alcanza a explicar",
+            )
+        )
+
+    for s in vistas("concepto"):
+        if s["parrafos"] < m["parrafos_concepto"]:
+            salida.append(
+                (
+                    "aviso",
+                    f"«{s['titulo']}» (línea {s['linea']}): {s['parrafos']} párrafos; falta prosa",
+                )
+            )
+
+    return salida
+
+
+def imprimir_informe(problemas: list[tuple[str, str]]) -> int:
+    marcas = {"ok": "  ok  ", "aviso": " aviso", "error": " error"}
+    for nivel, texto in problemas:
+        print(f"[{marcas[nivel]}] {texto}")
+    errores = sum(1 for n, _ in problemas if n == "error")
+    avisos = sum(1 for n, _ in problemas if n == "aviso")
+    if errores:
+        print(
+            f"\n{errores} error(es), {avisos} aviso(s). La guía no se genera hasta corregirlos."
+        )
+    else:
+        print(f"\nContrato cumplido{'' if not avisos else f' con {avisos} aviso(s)'}.")
+    return errores
+
+
+def imprimir_catalogo(contrato: dict) -> None:
+    m = contrato["minimos"]
+    print("# Componentes\n")
+    print(
+        "Un componente es un bloque con una obligación. Si lo usas, debe cumplir esto:\n"
+    )
+    for nombre, c in contrato["componentes"].items():
+        print(f"## {nombre}\n")
+        print(f"`{c['sintaxis']}`\n")
+        print(f"{c['para']}\n")
+        print(f"- Bien: {c['ejemplo']}")
+        print(f"- Mal: {c['error']}\n")
+    print("# Mínimos\n")
+    for k, v in m.items():
+        print(f"- {k}: {v}")
+    print(f"\n# Obligatorios\n\n{', '.join(contrato['obligatorios'])}")
+
+
 def main(argv: list[str] | None = None) -> int:
+    try:  # consolas de Windows en cp1252 revientan con ∫, ≈ o →
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except (AttributeError, OSError):
+        pass
+
     ap = argparse.ArgumentParser(
         description="Markdown → guía HTML de estudio (papercraft)."
     )
-    ap.add_argument("entrada")
-    ap.add_argument("--salida", required=True)
+    ap.add_argument("entrada", nargs="?", default="")
+    ap.add_argument("--salida", default="")
     ap.add_argument("--titulo", default="")
     ap.add_argument("--subtitulo", default="")
     ap.add_argument("--materia", default="")
     ap.add_argument("--acento", default="#b4532a")
     ap.add_argument("--abrir", action="store_true", help="abre la guía en el navegador")
+    ap.add_argument("--validar", action="store_true", help="solo revisa el contrato")
+    ap.add_argument("--forzar", action="store_true", help="genera aunque haya errores")
+    ap.add_argument("--catalogo", action="store_true", help="lista los componentes")
     args = ap.parse_args(argv)
+
+    contrato = cargar_contrato()
+
+    if args.catalogo:
+        imprimir_catalogo(contrato)
+        return 0
+
+    if not args.entrada:
+        ap.error("falta el archivo de entrada")
 
     origen = Path(args.entrada)
     if not origen.exists():
@@ -966,11 +1310,21 @@ def main(argv: list[str] | None = None) -> int:
     BASE_DIR = origen.resolve().parent
 
     md = origen.read_text(encoding="utf-8")
+
+    problemas = validar(md, contrato)
+    errores = imprimir_informe(problemas)
+    if args.validar:
+        return 1 if errores else 0
+    if errores and not args.forzar:
+        return 1
+    if not args.salida:
+        ap.error("falta --salida")
+
     salida = construir(md, args.titulo, args.subtitulo, args.materia, args.acento)
     destino = Path(args.salida)
     destino.parent.mkdir(parents=True, exist_ok=True)
     destino.write_text(salida, encoding="utf-8")
-    print(f"guía: {destino} ({len(salida) // 1024} KB)")
+    print(f"\nguía: {destino} ({len(salida) // 1024} KB)")
     if args.abrir:
         webbrowser.open(destino.resolve().as_uri())
     return 0

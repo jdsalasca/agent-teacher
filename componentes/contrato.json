@@ -1,0 +1,132 @@
+{
+  "version": 1,
+  "minimos": {
+    "secciones": 5,
+    "secciones_max": 14,
+    "preguntas": 4,
+    "pasos_llegar": 4,
+    "parrafos_historia": 3,
+    "pasos_desglose": 3,
+    "parrafos_concepto": 2,
+    "palabras": 700
+  },
+  "obligatorios": ["objetivo", "prerequisito", "historia", "llegar", "plan", "transferencia"],
+  "condiciones": [
+    {
+      "si": "tabla_numerica",
+      "requiere": "desglose",
+      "mensaje": "hay una tabla con cifras y ningún ::: desglose; el lector no puede reproducir de dónde salen"
+    }
+  ],
+  "frases_prohibidas": [
+    "es importante destacar",
+    "cabe mencionar",
+    "cabe resaltar",
+    "es fundamental comprender",
+    "en resumen",
+    "en conclusión",
+    "en definitiva",
+    "a continuación veremos",
+    "como podemos observar",
+    "en el mundo actual"
+  ],
+  "marcadores": ["TODO", "TBD", "PENDIENTE", "lorem ipsum", "XXX", "escribe aquí"],
+  "componentes": {
+    "objetivo": {
+      "sintaxis": "::: objetivo",
+      "para": "Qué podrá HACER el lector al terminar. Una acción, no un tema.",
+      "ejemplo": "Estimar la energía de una bomba con cuatro pedazos y decir cuánto se equivoca.",
+      "error": "«Comprender el concepto de integral»: eso no es un objetivo, es un deseo."
+    },
+    "prerequisito": {
+      "sintaxis": "::: prerequisito",
+      "para": "Qué necesita saber antes, en lenguaje llano. Baja la ansiedad y evita perder al lector.",
+      "ejemplo": "Multiplicar, dividir y aceptar que una hora tiene 60 minutos.",
+      "error": "Listar temas del curso en vez de la habilidad concreta que hace falta."
+    },
+    "analogia": {
+      "sintaxis": "::: analogia",
+      "para": "Un puente cotidiano hacia la idea, cuando el concepto es abstracto.",
+      "ejemplo": "La potencia es la velocidad del carro; la energía es la distancia recorrida.",
+      "error": "Una analogía que hay que explicar más que el concepto original."
+    },
+    "ejemplo": {
+      "sintaxis": "::: ejemplo",
+      "para": "Un caso resuelto de principio a fin, con los números a la vista.",
+      "ejemplo": "Bombillo de 100 W durante 2 h: 100 × 2 = 200 W·h.",
+      "error": "Un ejemplo enunciado sin resolver; el lector no puede comprobarlo."
+    },
+    "error": {
+      "sintaxis": "::: error",
+      "para": "La confusión típica, nombrada sin rodeos y con la corrección al lado.",
+      "ejemplo": "«Gastó 120 porque marcaba 120»: confunde la rapidez con el acumulado.",
+      "error": "Advertir «cuidado con este error» sin decir cuál es ni cómo se corrige."
+    },
+    "nota": {
+      "sintaxis": "::: nota",
+      "para": "Un dato que conviene retener y no encaja en el hilo del párrafo.",
+      "ejemplo": "El símbolo ∫ es una S alargada de summa: suma.",
+      "error": "Usarlo como contenedor de relleno o para repetir lo ya dicho."
+    },
+    "tip": {
+      "sintaxis": "::: tip",
+      "para": "Un atajo práctico que ahorra tiempo o evita un tropiezo.",
+      "ejemplo": "Si la función crece, la suma por izquierda siempre se queda corta.",
+      "error": "Un consejo genérico tipo «practica mucho»."
+    },
+    "pasos": {
+      "sintaxis": "::: pasos",
+      "para": "El procedimiento numerado para resolver el ejercicio. Se copia y se sigue.",
+      "ejemplo": "1. Calcula el ancho. 2. Evalúa la función. 3. Suma. 4. Multiplica. 5. Reporta el error.",
+      "error": "Pasos que dicen «aplica la fórmula» sin mostrar la fórmula."
+    },
+    "enfoques": {
+      "sintaxis": "::: enfoques",
+      "para": "Dos o tres caminos para el mismo problema y cuándo conviene cada uno.",
+      "ejemplo": "**Trapecios** — une los extremos con una recta; error 0,03 % con cuatro pedazos.",
+      "error": "Enumerar métodos sin decir cuál elegir ni por qué."
+    },
+    "llegar": {
+      "sintaxis": "::: llegar",
+      "para": "Derivar el concepto de los datos antes de nombrarlo. Es la pieza que separa explicar de enunciar.",
+      "ejemplo": "Observa → compara → cuantifica → nombra → verifica → decide.",
+      "error": "Menos de cuatro pasos, o pasos que ya usan el nombre que se quiere introducir."
+    },
+    "desglose": {
+      "sintaxis": "::: desglose",
+      "para": "La aritmética de cada cifra, dentro de un <details> que se abre al hacer clic.",
+      "ejemplo": "## n = 4 → 208,75\n- Ancho: 2 ÷ 4 = 0,5 h\n- Suma: 100 + 101,25 + 105 + 111,25 = 417,5 W\n- Energía: 417,5 × 0,5 = 208,75 W·h",
+      "error": "Poner el resultado sin las operaciones intermedias: eso sigue siendo un acto de fe."
+    },
+    "plan": {
+      "sintaxis": "::: plan",
+      "para": "Repaso espaciado con fechas concretas. Sin esto se olvida en una semana.",
+      "ejemplo": "Día 2 — rehacer el desglose sin mirar. Día 5 — explicarlo en voz alta.",
+      "error": "«Repasar periódicamente»: no es un plan, es una intención."
+    },
+    "transferencia": {
+      "sintaxis": "::: transferencia",
+      "para": "Dónde más sirve la idea y una tarea para aplicarla fuera del ejemplo.",
+      "ejemplo": "Un plan de datos que cobra por tramos es la misma suma, con otras unidades.",
+      "error": "Repetir el ejemplo de la guía con otro número."
+    },
+    "concepto": {
+      "sintaxis": "## Título {concepto}",
+      "para": "Una idea por sección, en prosa. Es el cuerpo de la guía.",
+      "ejemplo": "«A las seis de la mañana la bomba arranca y el agua empieza a subir.»",
+      "error": "Secciones de tres viñetas: eso es un resumen, no una explicación."
+    },
+    "historia": {
+      "sintaxis": "## Título {historia}",
+      "para": "De dónde salió la idea, contado como relato: quién, qué problema tenía, qué se creía antes, qué cambió.",
+      "ejemplo": "Riemann tenía 28 años y necesitaba dar una clase para poder enseñar en Gotinga.",
+      "error": "Una lista de fechas y nombres. Sin conflicto no hay historia, y sin historia no se recuerda."
+    },
+    "practica": {
+      "sintaxis": "## Título {practica}  +  Q: / R:",
+      "para": "Recuperación activa: preguntas cuya respuesta NO esté copiada en el párrafo anterior.",
+      "ejemplo": "Q: ¿Qué unidades tiene f(2)? R: Vatios, no energía.",
+      "error": "Preguntas de sí o no, o que se responden leyendo el título."
+    }
+  }
+}
