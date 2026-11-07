@@ -70,7 +70,7 @@ python teacher.py leccion.md --validar
 [ error] línea 17: hay una tabla con cifras y ningún ::: desglose
 ```
 
-Obligatorios hoy: `objetivo`, `prerequisito`, `historia`, `llegar`, `plan`, `transferencia`, más cuatro preguntas Q/R. Si una tabla trae cifras, exige `::: desglose`. Los umbrales viven en [`componentes/contrato.json`](componentes/contrato.json), que es la misma fuente que lee el validador.
+Obligatorios hoy: `objetivo`, `prerequisito`, `dominio`, `historia`, `llegar`, `plan`, `transferencia`, `fuentes`; más cuatro preguntas Q/R. El `dominio` exige un `::: glosario` con mínimo 4 términos desplegables, las `{miradas}` exigen `::: pestanas` con mínimo 3 enfoques, y `{fuentes}` exige 3 referencias con año. Si una tabla trae cifras, exige `::: desglose`. Los umbrales viven en [`componentes/contrato.json`](componentes/contrato.json), que es la misma fuente que lee el validador.
 
 La razón de fondo: «sé claro y profundo» no es verificable; «la historia tiene al menos tres párrafos y cero viñetas» sí. Un agente nuevo no tiene que leer un manual: ejecuta, ve lo que falta y corrige.
 

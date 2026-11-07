@@ -2,7 +2,7 @@
   "version": 1,
   "minimos": {
     "secciones": 5,
-    "secciones_max": 14,
+    "secciones_max": 16,
     "preguntas": 4,
     "pasos_llegar": 4,
     "parrafos_historia": 3,
@@ -10,7 +10,7 @@
     "parrafos_concepto": 2,
     "palabras": 700
   },
-  "obligatorios": ["objetivo", "prerequisito", "dominio", "historia", "llegar", "plan", "transferencia"],
+  "obligatorios": ["objetivo", "prerequisito", "dominio", "historia", "llegar", "plan", "transferencia", "fuentes"],
   "prohibido_meta": [
     "video",
     "vídeo",
@@ -110,6 +110,11 @@
       "titulo": "Qué llevarte de este tema",
       "grupo": "transferencia",
       "para": "Lo que hay que retener y el plan para no olvidarlo."
+    },
+    "fuentes": {
+      "titulo": "Fuentes y lecturas",
+      "grupo": "transferencia",
+      "para": "Las obras que sostienen lo que dice la guía: autor, año, título y capítulo. Mínimo tres."
     }
   },
   "componentes": {
@@ -179,6 +184,30 @@
       "ejemplo": "## n = 4 → 208,75\n- Ancho: 2 ÷ 4 = 0,5 h\n- Suma: 100 + 101,25 + 105 + 111,25 = 417,5 W\n- Energía: 417,5 × 0,5 = 208,75 W·h",
       "error": "Poner el resultado sin las operaciones intermedias: eso sigue siendo un acto de fe."
     },
+    "glosario": {
+      "sintaxis": "::: glosario  (cada término empieza con ## Nombre)",
+      "para": "Los términos del tema, con una definición corta visible y el detalle escondido tras un clic.",
+      "ejemplo": "## Subintervalo\nEl pedazo entre dos cortes.\nSu ancho es Δt = t_i − t_{i−1}, y se mide en horas.",
+      "error": "Listar palabras sin definirlas, o esconder también la definición corta: el lector no sabe qué abre."
+    },
+    "pestanas": {
+      "sintaxis": "::: pestanas  (cada enfoque empieza con ## Nombre)",
+      "para": "Enfoques alternativos del mismo objeto, uno visible a la vez. Sirve para miradas, métodos y campos.",
+      "ejemplo": "## Geométrica\nVe un área.\n## Física\nVe una acumulación.",
+      "error": "Pestañas con una sola línea: si no hay profundidad, no hacía falta la pestaña."
+    },
+    "secuencia": {
+      "sintaxis": "::: secuencia  (una imagen por línea)",
+      "para": "Una historia visual en 4-8 cuadros numerados: cada imagen muestra un paso o un error.",
+      "ejemplo": "![Primer cuadro](figuras/paso1.png)\n![Segundo cuadro](figuras/paso2.png)",
+      "error": "Imágenes decorativas sin relación con el paso que dicen ilustrar."
+    },
+    "ejercicio": {
+      "sintaxis": "::: ejercicio  (## Enunciado y ## Solución)",
+      "para": "Un problema con su solución paso a paso escondida, para practicar antes de mirar.",
+      "ejemplo": "## Enunciado\nCalcula L_4 para f(t)=100+5t².\n## Solución\nΔt = 0,5; alturas 100, 101,25, 105, 111,25; L = 208,75.",
+      "error": "Dar la solución sin el desarrollo, o un enunciado que se resuelve copiando el ejemplo."
+    },
     "plan": {
       "sintaxis": "::: plan",
       "para": "Repaso espaciado con fechas concretas. Sin esto se olvida en una semana.",
@@ -210,6 +239,13 @@
       "para": "El vocabulario del tema, definido antes de usarlo: cada símbolo, cada palabra técnica, con su significado y su unidad.",
       "ejemplo": "Partición: los cortes t₀ < t₁ < … < tₙ. Subintervalo: lo que queda entre dos cortes. Ancho: tᵢ₊₁ − tᵢ.",
       "error": "Usar Δt durante tres párrafos sin decir qué mide, o llamar «rectángulo» a algo que no se definió."
+    },
+    "fuentes": {
+      "sintaxis": "## Fuentes y lecturas {fuentes}",
+      "forma": "vista",
+      "para": "Las obras que sostienen lo que dice la guía, con autor, año y capítulo. Mínimo tres, y ninguna inventada.",
+      "ejemplo": "Stewart, J. (2016). Cálculo de una variable (8.ª ed.). Cengage. Capítulo 5.",
+      "error": "Enlaces sueltos sin autor ni año, o citar un libro que no se comprobó."
     },
     "practica": {
       "sintaxis": "## Título {practica}  +  Q: / R:",

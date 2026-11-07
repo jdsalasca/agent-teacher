@@ -434,6 +434,207 @@ blockquote {
   color: #7a5a2b;
 }
 
+/* ---------- glosario ---------- */
+.glosario {
+  margin: 18px 0 26px;
+  display: grid;
+  gap: 8px;
+}
+
+.termino {
+  background: #fffdf8;
+  border: 1px solid #e9dccb;
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.termino summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  align-items: baseline;
+}
+
+.termino summary::-webkit-details-marker {
+  display: none;
+}
+
+.termino summary::before {
+  content: "▸";
+  color: #b4552f;
+  font-size: 12px;
+}
+
+.termino[open] summary::before {
+  content: "▾";
+}
+
+.termino strong {
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 18px;
+}
+
+.termino .def {
+  color: #4a4438;
+}
+
+.termino-mas {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #e9dccb;
+}
+
+.termino-mas p {
+  font-size: 17px;
+}
+
+.term {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1.5px dotted #b4552f;
+}
+
+.term:hover {
+  color: #b4552f;
+  border-bottom-style: solid;
+}
+
+/* ---------- pestañas ---------- */
+.pestanas {
+  margin: 18px 0 26px;
+}
+
+.pestanas input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pestanas label {
+  display: inline-block;
+  cursor: pointer;
+  padding: 6px 13px;
+  margin: 0 6px 8px 0;
+  font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  font-size: 13px;
+  color: #7b6a5b;
+  background: #fffdf8;
+  border: 1px solid #e9dccb;
+  border-radius: 999px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.pestanas label:hover {
+  border-color: #b4552f;
+  color: #b4552f;
+}
+
+.pestanas input:checked + label {
+  background: #b4552f;
+  color: #fff;
+  border-color: #b4552f;
+}
+
+.pestanas input:focus-visible + label {
+  outline: 2px solid #b4552f;
+  outline-offset: 2px;
+}
+
+.pestanas .panel {
+  display: none;
+  padding: 4px 2px 0;
+}
+
+/* ---------- secuencia visual ---------- */
+.secuencia {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 26px;
+  counter-reset: paso;
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+
+.secuencia li {
+  flex: 0 0 300px;
+  scroll-snap-align: start;
+  counter-increment: paso;
+  position: relative;
+  margin: 0;
+}
+
+.secuencia li::before {
+  content: counter(paso);
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  z-index: 2;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 11px;
+  color: #fff;
+  background: #b4552f;
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+
+.secuencia figure {
+  margin: 0;
+}
+
+.secuencia figure img {
+  width: 100%;
+}
+
+.secuencia figcaption {
+  font-size: 13.5px;
+  text-align: left;
+  padding: 6px 2px;
+}
+
+/* ---------- ejercicio ---------- */
+.ejercicio {
+  margin: 18px 0 26px;
+  background: #fffdf8;
+  border: 1px solid #e9dccb;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.ejercicio .etiqueta {
+  display: block;
+  margin-bottom: 4px;
+  font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #b4552f;
+}
+
+.ejercicio .enunciado p:last-child {
+  margin-bottom: 0;
+}
+
+.ejercicio .solucion {
+  margin-top: 10px;
+  border-top: 1px dashed #e9dccb;
+  padding-top: 8px;
+}
+
+.ejercicio .solucion summary {
+  cursor: pointer;
+  font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  font-size: 13px;
+  color: #b4552f;
+}
+
+.ejercicio .solucion[open] summary {
+  margin-bottom: 8px;
+}
+
 /* ---------- pasos animados ---------- */
 .pasos {
   list-style: none;

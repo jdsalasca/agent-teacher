@@ -399,10 +399,17 @@ LOGO = """<svg viewBox="0 0 120 120" role="img" aria-label="teacher">
 
 
 def inline(texto: str) -> str:
-    """Convierte negritas, cursivas, código y $math$ en línea. Escapa el HTML primero."""
+    """Convierte negritas, cursivas, código, $math$ y ==término== en línea."""
     t = html.escape(texto)
     t = re.sub(r"`([^`]+)`", r"<code>\1</code>", t)
     t = re.sub(r"\$([^$]+)\$", r'<span class="math">$\1$</span>', t)
+    t = re.sub(
+        r"==([^=]+)==",
+        lambda m: (
+            f'<a class="term" href="#glosario-{slug(m.group(1))}">{m.group(1)}</a>'
+        ),
+        t,
+    )
     t = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", t)
     t = re.sub(r"(?<!\*)\*([^*]+)\*(?!\*)", r"<em>\1</em>", t)
     return t
@@ -463,8 +470,204 @@ def slug(texto: str) -> str:
     return re.sub(r"[\s]+", "-", s)[:60] or "seccion"
 
 
+def figura_html(caption: str, src: str) -> str:
+    """Figura incrustada en base64 para que la guía siga siendo un solo archivo."""
+    destino = src
+    archivo = (BASE_DIR / src) if BASE_DIR else None
+    if archivo and archivo.exists():
+        import base64
+
+        mime = {
+            ".svg": "image/svg+xml",
+            ".png": "image/png",
+            ".gif": "image/gif",
+            ".webp": "image/webp",
+            ".jpg": "image/jpeg",
+            ".jpeg": "image/jpeg",
+        }.get(archivo.suffix.lower(), "application/octet-stream")
+        datos = base64.b64encode(archivo.read_bytes()).decode()
+        destino = f"data:{mime};base64,{datos}"
+    return (
+        f'<figure><img src="{destino}" alt="{html.escape(caption)}">'
+        f"<figcaption>{inline(caption)}</figcaption></figure>"
+    )
+
+
+def render_fragmento(lineas: list[str]) -> str:
+    """Markdown mínimo para el interior de pestañas, glosario y ejercicios."""
+    piezas: list[str] = []
+    parrafo: list[str] = []
+    lista: str | None = None
+
+    def cerrar_parrafo():
+        nonlocal parrafo
+        if parrafo:
+            piezas.append("<p>" + inline(" ".join(parrafo).strip()) + "</p>")
+            parrafo = []
+
+    def cerrar_lista():
+        nonlocal lista
+        if lista:
+            piezas.append(f"</{lista}>")
+            lista = None
+
+    i = 0
+    while i < len(lineas):
+        d = lineas[i].strip()
+        if not d:
+            cerrar_parrafo()
+            cerrar_lista()
+            i += 1
+            continue
+        m_img = re.match(r"!\[(.*?)\]\((.+?)\)", d)
+        if m_img:
+            cerrar_parrafo()
+            cerrar_lista()
+            piezas.append(figura_html(m_img.group(1), m_img.group(2)))
+            i += 1
+            continue
+        if d.startswith("$$"):
+            cerrar_parrafo()
+            cerrar_lista()
+            expr = html.escape(d.strip("$").strip())
+            piezas.append(f'<div class="formula">$${expr}$$</div>')
+            i += 1
+            continue
+        if d.startswith(("- ", "* ")):
+            cerrar_parrafo()
+            if lista != "ul":
+                cerrar_lista()
+                piezas.append("<ul>")
+                lista = "ul"
+            piezas.append("<li>" + inline(d[2:]) + "</li>")
+            i += 1
+            continue
+        if re.match(r"^\d+\.\s", d):
+            cerrar_parrafo()
+            if lista != "ol":
+                cerrar_lista()
+                piezas.append("<ol>")
+                lista = "ol"
+            piezas.append("<li>" + inline(re.sub(r"^\d+\.\s", "", d)) + "</li>")
+            i += 1
+            continue
+        if d.startswith("### "):
+            cerrar_parrafo()
+            cerrar_lista()
+            piezas.append("<h4>" + inline(d[4:]) + "</h4>")
+            i += 1
+            continue
+        if d.startswith("> "):
+            cerrar_parrafo()
+            cerrar_lista()
+            piezas.append("<blockquote>" + inline(d[2:]) + "</blockquote>")
+            i += 1
+            continue
+        parrafo.append(d)
+        i += 1
+
+    cerrar_parrafo()
+    cerrar_lista()
+    return "".join(piezas)
+
+
+_TAB = [0]
+TABS_CSS: list[str] = []
+
+
 def render_bloque(tipo: str, lineas: list[str]) -> str:
     cuerpo_crudo = "\n".join(lineas).strip()
+
+    if tipo == "glosario":
+        entradas = []
+        actual = None
+        for l in cuerpo_crudo.splitlines():
+            if l.strip().startswith("## "):
+                actual = {"nombre": l.strip()[3:].strip(), "lineas": []}
+                entradas.append(actual)
+            elif actual is not None:
+                actual["lineas"].append(l)
+        piezas = []
+        for e in entradas:
+            cuerpo = [l for l in e["lineas"] if l.strip()]
+            corto = cuerpo[0].strip() if cuerpo else ""
+            resto = cuerpo[1:]
+            ident = "glosario-" + slug(e["nombre"])
+            nombre = inline(e["nombre"])
+            if resto:
+                piezas.append(
+                    f'<details class="termino" id="{ident}">'
+                    f"<summary><strong>{nombre}</strong>"
+                    f'<span class="def">{inline(corto)}</span></summary>'
+                    f'<div class="termino-mas">{render_fragmento(resto)}</div>'
+                    "</details>"
+                )
+            else:
+                piezas.append(
+                    f'<div class="termino" id="{ident}"><strong>{nombre}</strong>'
+                    f'<span class="def">{inline(corto)}</span></div>'
+                )
+        return f'<div class="glosario">{"".join(piezas)}</div>'
+
+    if tipo == "pestanas":
+        paneles = []
+        actual = None
+        for l in cuerpo_crudo.splitlines():
+            if l.strip().startswith("## "):
+                actual = {"titulo": l.strip()[3:].strip(), "lineas": []}
+                paneles.append(actual)
+            elif actual is not None:
+                actual["lineas"].append(l)
+        if not paneles:
+            return f'<div class="bloque nota"><p>{inline(cuerpo_crudo)}</p></div>'
+        _TAB[0] += 1
+        base = f"pest-{_TAB[0]}"
+        controles, cuerpos = [], []
+        for idx, p in enumerate(paneles):
+            pid = f"{base}-{idx}"
+            marcado = " checked" if idx == 0 else ""
+            controles.append(
+                f'<input type="radio" name="{base}" id="{pid}"{marcado}>'
+                f'<label for="{pid}">{inline(p["titulo"])}</label>'
+            )
+            cuerpos.append(
+                f'<div class="panel" data-tab="{pid}">{render_fragmento(p["lineas"])}</div>'
+            )
+            TABS_CSS.append(
+                f".pestanas:has(#{pid}:checked) [data-tab='{pid}']{{display:block}}"
+            )
+        return f'<div class="pestanas">{"".join(controles)}{"".join(cuerpos)}</div>'
+
+    if tipo == "secuencia":
+        marcos = []
+        for l in cuerpo_crudo.splitlines():
+            m = re.match(r"!\[(.*?)\]\((.+?)\)", l.strip())
+            if m:
+                marcos.append(f"<li>{figura_html(m.group(1), m.group(2))}</li>")
+        return f'<ol class="secuencia">{"".join(marcos)}</ol>'
+
+    if tipo == "ejercicio":
+        partes = {}
+        actual = None
+        for l in cuerpo_crudo.splitlines():
+            if l.strip().startswith("## "):
+                actual = l.strip()[3:].strip().lower()
+                partes[actual] = []
+            elif actual is not None:
+                partes[actual].append(l)
+        enunciado = render_fragmento(partes.get("enunciado", []))
+        solucion = render_fragmento(partes.get("solución", partes.get("solucion", [])))
+        bloque = (
+            '<div class="ejercicio"><div class="enunciado">'
+            '<span class="etiqueta">Ejercicio</span>'
+            f"{enunciado}</div>"
+        )
+        if solucion:
+            bloque += (
+                '<details class="solucion"><summary>Ver la solución paso a paso</summary>'
+                f"<div>{solucion}</div></details>"
+            )
+        return bloque + "</div>"
 
     if tipo == "pasos":
         items = [l for l in cuerpo_crudo.splitlines() if l.strip()]
@@ -705,26 +908,7 @@ def convertir(
         if m_img:
             cerrar_parrafo()
             cerrar_lista()
-            caption, src = m_img.group(1), m_img.group(2)
-            destino_img = src
-            archivo = (BASE_DIR / src) if BASE_DIR else None
-            if archivo and archivo.exists():
-                import base64
-
-                mime = {
-                    ".svg": "image/svg+xml",
-                    ".png": "image/png",
-                    ".gif": "image/gif",
-                    ".webp": "image/webp",
-                    ".jpg": "image/jpeg",
-                    ".jpeg": "image/jpeg",
-                }.get(archivo.suffix.lower(), "application/octet-stream")
-                datos = base64.b64encode(archivo.read_bytes()).decode()
-                destino_img = f"data:{mime};base64,{datos}"
-            cuerpo.append(
-                f'<figure><img src="{destino_img}" alt="{html.escape(caption)}">'
-                f"<figcaption>{inline(caption)}</figcaption></figure>"
-            )
+            cuerpo.append(figura_html(m_img.group(1), m_img.group(2)))
             i += 1
             continue
 
@@ -741,7 +925,7 @@ def convertir(
         if desnuda.startswith("$$"):
             cerrar_parrafo()
             cerrar_lista()
-            expr = desnuda.strip("$").strip()
+            expr = html.escape(desnuda.strip("$").strip())
             cuerpo.append(f'<div class="formula">$${expr}$$</div>')
             i += 1
             continue
@@ -931,6 +1115,7 @@ def construir(
     acento: str,
     contrato: dict,
 ) -> str:
+    TABS_CSS.clear()
     titulo_md, idea, cuerpo, secciones = convertir(md, contrato.get("vistas", {}))
     titulo = titulo or titulo_md or "Guía de estudio"
     hoy = dt.date.today().strftime("%d/%m/%Y")
@@ -961,7 +1146,7 @@ def construir(
     indice = "".join(nav)
 
     idea_html = f'<div class="idea">{inline(idea)}</div>' if idea else ""
-    css = cargar_css(acento)
+    css = cargar_css(acento) + "".join(TABS_CSS)
 
     return f"""<!DOCTYPE html>
 <html lang="es">
@@ -1181,6 +1366,74 @@ def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
                     f"usa una de: {', '.join(sorted(conocidas))}",
                 )
             )
+
+    # --- glosario: términos desplegables y marcas ==término== ---
+    terminos = set()
+    for b in bloques("glosario"):
+        for l in b["lineas"]:
+            if l.strip().startswith("## "):
+                terminos.add(slug(l.strip()[3:].strip()))
+    if vistas("dominio") and len(terminos) < 4:
+        salida.append(
+            (
+                "error",
+                f"dominio: {len(terminos)} términos en el glosario, mínimo 4 — usa ::: glosario",
+            )
+        )
+    for encontrado in re.finditer(r"==([^=]+)==", md):
+        if slug(encontrado.group(1)) not in terminos:
+            salida.append(
+                (
+                    "error",
+                    f"«{encontrado.group(1)}» está marcado como término pero no está en el glosario",
+                )
+            )
+            break
+
+    # --- fórmulas: delimitadores balanceados ---
+    for n, l in enumerate(md.splitlines(), start=1):
+        if l.count("$$") % 2:
+            salida.append(
+                (
+                    "error",
+                    f"línea {n}: «$$» sin cerrar; cada fórmula va completa en una línea",
+                )
+            )
+            break
+        if l.replace("$$", "").count("$") % 2:
+            salida.append(("error", f"línea {n}: «$» sin cerrar"))
+            break
+
+    # --- miradas: al menos tres enfoques en pestañas ---
+    if vistas("miradas"):
+        paneles = max(
+            (
+                sum(1 for l in b["lineas"] if l.strip().startswith("## "))
+                for b in bloques("pestanas")
+            ),
+            default=0,
+        )
+        if paneles < 3:
+            salida.append(
+                (
+                    "error",
+                    f"miradas: usa ::: pestanas con al menos 3 enfoques (hay {paneles})",
+                )
+            )
+        else:
+            salida.append(("ok", f"miradas: {paneles} enfoques en pestañas"))
+
+    # --- fuentes: al menos tres referencias con año ---
+    for parte in re.split(r"^## ", md, flags=re.M)[1:]:
+        encabezado = parte.splitlines()[0] if parte.splitlines() else ""
+        if "{fuentes}" in encabezado:
+            refs = re.findall(r"\((?:1[5-9]\d{2}|20\d{2})\)", parte)
+            if len(refs) < 3:
+                salida.append(
+                    ("error", f"fuentes: {len(refs)} referencias con año, mínimo 3")
+                )
+            else:
+                salida.append(("ok", f"fuentes: {len(refs)} referencias con año"))
 
     # --- historia: relato, no cronología ---
     for s in vistas("historia"):

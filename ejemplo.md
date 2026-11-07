@@ -12,19 +12,44 @@ Multiplicar, dividir y leer una tabla. Si sabes que un bombillo de 100 W encendi
 
 ## El territorio: las palabras que vamos a usar {dominio}
 
-Casi todas las confusiones de este tema son de vocabulario, así que conviene fijarlo antes de tocar números.
+Casi todas las confusiones de este tema son de vocabulario, así que conviene fijarlo antes de tocar números. Cada término se abre con un clic.
 
-| Término | Qué es | Unidad |
-| --- | --- | --- |
-| Tasa | La rapidez con que cambia algo en un instante: la derivada. | W |
-| Acumulado | Lo que se junta al sumar la tasa durante un intervalo: la integral. | W·h |
-| Partición | Los cortes $a=t_0<t_1<\dots<t_n=b$ que dividen el intervalo. | h |
-| Subintervalo | El pedazo entre dos cortes consecutivos. | h |
-| Ancho $\Delta t_i$ | La duración del subintervalo: $t_i-t_{i-1}$. | h |
-| Punto de muestra | El instante dentro del subintervalo donde se mide la altura. | h |
-| Suma de Riemann | La suma de ancho por altura: $\sum f(t_i)\,\Delta t_i$. | W·h |
+::: glosario
+## Tasa
+La rapidez con que cambia una cantidad en un instante.
+Es la derivada de la energía respecto al tiempo. Si la energía se mide en vatios-hora y el tiempo en horas, la tasa se mide en vatios. Una tasa no dice cuánto hay: dice a qué velocidad está cambiando.
 
-La palabra que más se malinterpreta es **ancho**: no es el ancho de un dibujo, es cuánto tiempo cubre cada subintervalo. Y «área» es la representación geométrica, no la magnitud: lo que se acumula depende de las unidades de la tasa.
+## Acumulado
+Lo que se junta al sumar la tasa durante un intervalo.
+Se mide en vatios-hora y se calcula con una integral. La diferencia con la tasa es la misma que hay entre la velocidad del tablero y los kilómetros del odómetro: una es instantánea, la otra es la suma de todos los instantes.
+
+## Partición
+Los cortes que dividen el intervalo en pedazos.
+Una partición de $[0,2]$ con cuatro pedazos es el conjunto $0<0{,}5<1<1{,}5<2$. Los cortes no tienen por qué ser equidistantes, aunque en este tema casi siempre lo sean.
+
+## Subintervalo
+El pedazo de tiempo entre dos cortes consecutivos.
+Se escribe $[t_{i-1},t_i]$ y es la unidad de trabajo de toda la suma. Cada subintervalo aporta un rectángulo, y el conjunto de todos los rectángulos es la aproximación.
+
+## Ancho
+La duración de un subintervalo, $\Delta t_i=t_i-t_{i-1}$.
+No es el ancho de un dibujo: es cuánto tiempo cubre el pedazo. Multiplicar la altura (vatios) por el ancho (horas) es lo que convierte una potencia en energía.
+
+## Punto de muestra
+El instante del subintervalo donde se mide la altura.
+Puede ser el extremo izquierdo, el derecho, el medio o cualquier otro. Cambiarlo cambia la suma: por eso la definición de integral exige que el resultado no dependa de esa elección.
+
+## Suma de Riemann
+La suma de ancho por altura, $\sum f(t_i^*)\,\Delta t_i$.
+Es un número finito, calculado con una partición concreta. No es la integral: es una aproximación que se acerca a ella cuando los anchos se hacen pequeños.
+
+## Norma de la partición
+El mayor de los anchos, $\lVert P\rVert=\max_i \Delta t_i$.
+Es el número que se hace tender a cero en la definición de integral. Controla el error de la peor franja, no el promedio.
+:::
+
+Y una advertencia que vale para todo el tema: **área** es la representación geométrica de la suma, no la magnitud. Lo que se acumula depende de las unidades de la tasa. Con vatios, el área es energía.
+
 
 ## La escena {problema}
 
@@ -64,11 +89,26 @@ El ancho es también lo que convierte vatios en vatios-hora. Un vatio suelto no 
 
 ## Dos maneras de mirar lo mismo {miradas}
 
-La escena del agricultor y la fórmula dicen lo mismo desde dos orillas. Desde la física, el área bajo la curva es la energía que entró al motor: cada rectángulo es un rato de consumo. Desde la geometría, es simplemente el área de una región limitada por una curva, y el método no sabe de vatios.
+::: pestanas
+## Geométrica
+El área bajo la curva es una región limitada por una recta horizontal y una curva; el método no sabe de vatios. Cada rectángulo aproxima una franja de esa región, y sumar franjas es sumar áreas.
 
-Esa doble lectura es la que vuelve útil el concepto: lo que aquí se mide en vatios-hora, en otra parte se mide en metros recorridos, en litros llenados o en pesos cobrados. El dibujo no cambia; cambia la unidad.
+El signo importa: lo que queda por debajo del eje resta. Por eso la integral de una función que cambia de signo puede ser menor que la suma de las áreas.
 
-Y hay una tercera mirada, la del que factura: para él no importa el valor exacto sino cuánto se puede equivocar sin que la cuenta quede mal. De ahí sale la pregunta por el error, que aparece más adelante.
+## Física
+Si $f$ es una tasa, la integral es el total acumulado. Energía si $f$ es potencia, distancia si es velocidad, volumen si es caudal, carga si es corriente.
+
+La lectura física obliga a mirar las unidades: el producto de la tasa por el tiempo es lo que produce la magnitud acumulada, y sin esa multiplicación el número no significa nada.
+
+## Analítica
+La integral es el límite de una sucesión de sumas cuando el mayor ancho tiende a cero. Esa definición no menciona antiderivadas: solo habla de particiones y de convergencia.
+
+De aquí sale la pregunta por la velocidad de convergencia, que es la que permite decidir cuántos pedazos hacen falta para un error aceptable.
+
+## Del error
+Para quien factura no importa el valor exacto sino cuánto se puede equivocar sin que la cuenta quede mal. Esa mirada convierte el error en una herramienta de decisión: con veinte pedazos el error es del 0,46 %, suficiente para presupuestar.
+:::
+
 
 ## El primer intento: un solo pedazo {concepto}
 
@@ -203,3 +243,10 @@ Una app que sube su uso de CPU de 100 a 120 en dos horas consume energía; el c�
 Escribe la suma para ocho pedazos y compárala con la tabla.
 Busca en tu carrera un caso donde tengas la tasa y necesites el acumulado.
 :::
+
+## Fuentes y lecturas {fuentes}
+
+- Stewart, J. (2016). *Cálculo de una variable* (8.ª ed.). Cengage. Capítulo 5: integrales.
+- Spivak, M. (2008). *Calculus* (4.ª ed.). Publish or Perish. Capítulo 13: integrales.
+- Apostol, T. M. (1967). *Calculus* (2.ª ed., Vol. 1). Wiley. Capítulo 1: integrales.
+- Riemann, B. (1867). Über die Darstellbarkeit einer Function durch eine trigonometrische Reihe. *Abhandlungen der Königlichen Gesellschaft der Wissenschaften zu Göttingen*, 13, 87-132.
