@@ -1,0 +1,5 @@
+prueba/
+__pycache__/
+*.pyc
+ejemplo.html
+*.log

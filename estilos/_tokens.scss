@@ -1,0 +1,44 @@
+// ============================================================
+//  teacher · sistema de diseño
+//  Paleta terracota sobre papel. Tipografía medida para leer.
+//  Evidencia: cuerpo >= 18 px, interlineado 1.5, línea 45-75
+//  caracteres, sin justificar (WCAG 1.4.8), contraste AA.
+// ============================================================
+
+// --- color ---
+$papel:        #f7f0e6;
+$hoja:         #fffdf8;
+$tinta:        #241d18;
+$suave:        #7b6a5b;
+$linea:        #e9dccb;
+$terracota:    #b4552f;
+$terracota-hondo: #8f3f22;
+$terracota-claro: #d98a63;
+$dorado:       #c2a25a;
+$verde:        #2f6f5e;
+$verde-fondo:  #eef5f1;
+$azul-fondo:   #e8f0f7;
+$rojo-fondo:   #fbe7e1;
+$amarillo:     #fff3c9;
+$sombra:       rgba(72, 45, 25, .16);
+
+// --- tipografía ---
+$serif-titulo: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+$serif-texto:  Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+$mono:         ui-monospace, "Cascadia Code", Consolas, monospace;
+$sans:         ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+
+$texto:        19.5px;   // >= 18 px: mejor comprensión en pantalla
+$interlineado: 1.6;      // 1.5 recomendado; 1.8 perjudica
+$ancho-texto:  700px;    // ~66-72 caracteres por línea
+$lateral:      268px;
+
+// --- espacio y forma ---
+$r-sm: 8px;
+$r-md: 12px;
+$r-lg: 16px;
+$s1: 6px;
+$s2: 12px;
+$s3: 18px;
+$s4: 26px;
+$s5: 38px;
