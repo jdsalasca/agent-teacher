@@ -724,6 +724,31 @@ def render_bloque(tipo: str, lineas: list[str]) -> str:
             )
         return bloque + "</div>"
 
+    if tipo == "linea":
+        entradas = []
+        actual = None
+        for l in cuerpo_crudo.splitlines():
+            if l.strip().startswith("## "):
+                titulo = l.strip()[3:].strip()
+                for guion in ("—", "–", " - "):
+                    if guion in titulo:
+                        ano, nombre = titulo.split(guion, 1)
+                        break
+                else:
+                    ano, nombre = "", titulo
+                actual = {"ano": ano.strip(), "nombre": nombre.strip(), "lineas": []}
+                entradas.append(actual)
+            elif actual is not None:
+                actual["lineas"].append(l)
+        items = []
+        for e in entradas:
+            items.append(
+                f'<li><span class="ano">{inline(e["ano"])}</span>'
+                f'<div class="hito"><strong>{inline(e["nombre"])}</strong>'
+                f"{render_fragmento(e['lineas'])}</div></li>"
+            )
+        return f'<ol class="linea">{"".join(items)}</ol>'
+
     if tipo == "pasos":
         items = [l for l in cuerpo_crudo.splitlines() if l.strip()]
         pasos = "".join(
@@ -1428,6 +1453,29 @@ def _tabla_numerica(filas: list[str]) -> bool:
     return con_cifras >= 2
 
 
+def _secciones_md(md: str) -> list[tuple[str, str]]:
+    """Secciones de nivel 2 sin cortar los bloques ::: que viven dentro."""
+    secciones: list[tuple[str, list[str]]] = []
+    actual = None
+    dentro = False
+    for l in md.splitlines():
+        d = l.strip()
+        if d.startswith(":::") and len(d) > 3:
+            dentro = True
+        elif d == ":::" and dentro:
+            dentro = False
+        if not dentro and d.startswith("## "):
+            if actual is not None:
+                secciones.append((actual[0], "\n".join(actual[1])))
+            actual = (d[3:].strip(), [])
+            continue
+        if actual is not None:
+            actual[1].append(l)
+    if actual is not None:
+        secciones.append((actual[0], "\n".join(actual[1])))
+    return secciones
+
+
 def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
     """Devuelve el informe como pares (nivel, mensaje)."""
     doc = analizar(md)
@@ -1587,8 +1635,7 @@ def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
             salida.append(("ok", f"miradas: {paneles} enfoques en pestañas"))
 
     # --- fuentes: al menos tres referencias con año ---
-    for parte in re.split(r"^## ", md, flags=re.M)[1:]:
-        encabezado = parte.splitlines()[0] if parte.splitlines() else ""
+    for encabezado, parte in _secciones_md(md):
         if "{fuentes}" in encabezado:
             refs = re.findall(r"\((?:1[5-9]\d{2}|20\d{2})\)", parte)
             if len(refs) < 3:
@@ -1597,6 +1644,53 @@ def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
                 )
             else:
                 salida.append(("ok", f"fuentes: {len(refs)} referencias con año"))
+
+    # --- línea de tiempo: al menos cuatro hitos con año ---
+    for b in bloques("linea"):
+        hitos = [
+            l.strip()[3:].strip() for l in b["lineas"] if l.strip().startswith("## ")
+        ]
+        con_ano = [h for h in hitos if re.search(r"\d{4}", h)]
+        if len(con_ano) < 4:
+            salida.append(
+                (
+                    "error",
+                    f"línea de tiempo (línea {b['linea']}): {len(con_ano)} hitos con año, mínimo 4",
+                )
+            )
+        else:
+            salida.append(("ok", f"línea de tiempo: {len(con_ano)} hitos"))
+
+    # --- cada enfoque lleva su diagrama ---
+    for encabezado, parte in _secciones_md(md):
+        if "{miradas}" in encabezado or "{metodos}" in encabezado:
+            if "::: pestanas" not in parte:
+                continue
+            cuerpo_p = parte.split("::: pestanas", 1)[1]
+            paneles = re.split(r"^## ", cuerpo_p, flags=re.M)[1:]
+            sin_img = [p.splitlines()[0].strip() for p in paneles if "![" not in p]
+            if sin_img:
+                salida.append(
+                    (
+                        "error",
+                        f"{encabezado}: cada enfoque necesita un diagrama; faltan "
+                        f"{', '.join(sin_img)}",
+                    )
+                )
+            elif paneles:
+                salida.append(
+                    (
+                        "ok",
+                        f"{encabezado.split('{')[0].strip()}: {len(paneles)} enfoques con diagrama",
+                    )
+                )
+        if "{practica}" in encabezado and "![" not in parte:
+            salida.append(
+                (
+                    "error",
+                    "práctica: falta al menos una imagen que acompañe los ejercicios",
+                )
+            )
 
     # --- historia: relato, no cronología ---
     for s in vistas("historia"):

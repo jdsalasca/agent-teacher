@@ -10,7 +10,7 @@
     "parrafos_concepto": 2,
     "palabras": 700
   },
-  "obligatorios": ["objetivo", "prerequisito", "dominio", "historia", "autores", "llegar", "plan", "transferencia", "fuentes"],
+  "obligatorios": ["objetivo", "prerequisito", "dominio", "historia", "aportes", "autores", "llegar", "plan", "transferencia", "fuentes"],
   "prohibido_meta": [
     "video",
     "vídeo",
@@ -70,6 +70,11 @@
       "titulo": "Historia del concepto",
       "grupo": "historia",
       "para": "Quién lo pensó, qué problema tenía enfrente y qué cambió."
+    },
+    "aportes": {
+      "titulo": "Aportes al tema",
+      "grupo": "historia",
+      "para": "Qué hizo cada pensador por este tema concreto, en orden y con imágenes."
     },
     "llegar": {
       "titulo": "Cómo llegar al concepto",
@@ -246,6 +251,20 @@
       "para": "Fichas de los pensadores que sostienen el tema: nacionalidad, años, qué aportaron y un retrato si existe.",
       "ejemplo": "## Newton\nFísico y matemático inglés, 1643-1727.\nLlamó fluxión a la rapidez con que fluye una cantidad.",
       "error": "Listar nombres sin decir qué hicieron, o inventar biografías."
+    },
+    "aportes": {
+      "sintaxis": "## Título {aportes}  +  ::: linea",
+      "forma": "vista",
+      "para": "La línea de tiempo del tema: qué aportó cada pensador, en orden, con año y con imagen.",
+      "ejemplo": "## 1854 — Riemann\nCambia la exigencia: en vez de continuidad, pide que las sumas converjan.",
+      "error": "Una lista de fechas sin decir qué cambió en el tema con cada aporte."
+    },
+    "linea": {
+      "sintaxis": "::: linea  (cada hito empieza con ## Año — Nombre)",
+      "forma": "bloque",
+      "para": "Línea de tiempo vertical: año a la izquierda, hito y explicación a la derecha.",
+      "ejemplo": "## 1635 — Cavalieri\nTrata la figura como una pila de indivisibles.",
+      "error": "Hitos sin año o sin explicación de qué cambió."
     },
     "fuentes": {
       "sintaxis": "## Fuentes y lecturas {fuentes}",

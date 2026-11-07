@@ -89,21 +89,25 @@ El ancho es también lo que convierte vatios en vatios-hora. Un vatio suelto no 
 
 ::: pestanas
 ## Geométrica
+![La región entre la curva y el eje se puede encerrar entre rectángulos.](figuras/riemann_n4.svg)
 El área bajo la curva es una región limitada por una recta horizontal y una curva; el método no sabe de vatios. Cada rectángulo aproxima una franja de esa región, y sumar franjas es sumar áreas.
 
 El signo importa: lo que queda por debajo del eje resta. Por eso la integral de una función que cambia de signo puede ser menor que la suma de las áreas.
 
 ## Física
+![El área bajo la curva de potencia es la energía acumulada.](figuras/riemann_n4.svg)
 Si $f$ es una tasa, la integral es el total acumulado. Energía si $f$ es potencia, distancia si es velocidad, volumen si es caudal, carga si es corriente.
 
 La lectura física obliga a mirar las unidades: el producto de la tasa por el tiempo es lo que produce la magnitud acumulada, y sin esa multiplicación el número no significa nada.
 
 ## Analítica
+![La partición se afina y la suma se estabiliza.](figuras/riemann_animado.gif)
 La integral es el límite de una sucesión de sumas cuando el mayor ancho tiende a cero. Esa definición no menciona antiderivadas: solo habla de particiones y de convergencia.
 
 De aquí sale la pregunta por la velocidad de convergencia, que es la que permite decidir cuántos pedazos hacen falta para un error aceptable.
 
 ## Del error
+![Cada rectángulo deja un hueco que se puede medir.](figuras/riemann_n4.svg)
 Para quien factura no importa el valor exacto sino cuánto se puede equivocar sin que la cuenta quede mal. Esa mirada convierte el error en una herramienta de decisión: con veinte pedazos el error es del 0,46 %, suficiente para presupuestar.
 :::
 
@@ -142,6 +146,21 @@ El problema era concreto: Cauchy había definido la integral como límite de sum
 Riemann cambió una sola cosa: en vez de exigir continuidad, exigió que las sumas convergieran. Si al hacer los pedazos cada vez más pequeños la suma se estabiliza, hay integral; si no, no la hay. La integral dejó de ser una fórmula y se volvió una prueba de comportamiento.
 
 La idea de sumar pedazos era antiquísima: Arquímedes calculaba áreas así en el siglo III antes de Cristo, y Leibniz había inventado el símbolo $\int$ en 1675 como una «S» alargada de *summa*. Lo que Riemann agregó fue el criterio para saber cuándo esa suma vale. Por eso lleva su nombre y no el de Leibniz.
+
+## Aportes al tema {aportes}
+
+Cuatro momentos cambiaron la manera de calcular el total.
+
+::: linea
+## 1665 — Newton
+Llama fluxión a la rapidez y fluente a la cantidad: su cálculo va del total a la tasa y de vuelta.
+## 1823 — Cauchy
+Define la integral como límite de sumas para funciones continuas.
+## 1854 — Riemann
+Cambia la continuidad por la convergencia: la integral deja de depender de la forma de la curva.
+## 1875 — Darboux
+Encierra la integral entre la suma inferior y la superior, y da el criterio de integrabilidad.
+:::
 
 ::: autores
 ## Newton
@@ -226,6 +245,8 @@ Y si quieres ver la aritmética de cada fila, se abre aquí:
 :::
 
 ## Ponte a prueba {practica}
+
+![Cuatro tramos: el dibujo muestra de dónde sale cada suma.](figuras/riemann_n4.svg)
 
 Q: ¿Qué unidades tiene $f(2)$?
 R: Vatios. $f(2)$ es la potencia en ese instante, una tasa de consumo; la energía del intervalo es otra cosa y se mide en vatios-hora. Confundir las dos unidades es el error más común del tema.

@@ -722,6 +722,83 @@ html:not(.js) .term-wrap:focus-within .ficha-inline {
   margin-bottom: 8px;
 }
 
+/* ---------- línea de tiempo ---------- */
+.linea {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0 26px;
+  position: relative;
+}
+
+.linea::before {
+  content: "";
+  position: absolute;
+  left: 78px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: #e9dccb;
+}
+
+.linea li {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 26px;
+  position: relative;
+  margin: 0 0 18px;
+  list-style: none;
+}
+
+.linea li::before {
+  content: "";
+  position: absolute;
+  left: 72px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fffdf8;
+  border: 3px solid #b4552f;
+}
+
+.linea .ano {
+  text-align: right;
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 11px;
+  color: #b4552f;
+  padding-top: 3px;
+  line-height: 1.35;
+}
+
+.linea .hito {
+  padding-left: 0;
+}
+
+.linea .hito strong {
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 17px;
+}
+
+.linea .hito p {
+  font-size: 15.5px;
+  margin: 2px 0 0;
+}
+
+.linea figure {
+  float: right;
+  width: 140px;
+  margin: 0 0 6px 14px;
+}
+
+.linea figure img {
+  width: 140px;
+}
+
+.linea figcaption {
+  font-size: 10.5px;
+  line-height: 1.3;
+}
+
 /* ---------- pasos animados ---------- */
 .pasos {
   list-style: none;
