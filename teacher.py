@@ -466,6 +466,27 @@ def render_bloque(tipo: str, lineas: list[str]) -> str:
             )
         return f'<div class="enfoques">{"".join(tarjetas)}</div>'
 
+    if tipo == "desglose":
+        casos = []
+        actual = None
+        for l in cuerpo_crudo.splitlines():
+            if not l.strip():
+                continue
+            if l.startswith("## "):
+                actual = {"titulo": l[3:].strip(), "pasos": []}
+                casos.append(actual)
+            elif actual is not None:
+                actual["pasos"].append(re.sub(r"^\s*[-*]\s*", "", l))
+        if not casos:
+            return f'<div class="bloque nota"><p>{inline(cuerpo_crudo)}</p></div>'
+        html_casos = []
+        for c in casos:
+            pasos = "".join(f"<li>{inline(p)}</li>" for p in c["pasos"])
+            html_casos.append(
+                f"<details><summary>{inline(c['titulo'])}</summary><ol>{pasos}</ol></details>"
+            )
+        return f'<div class="desglose">{"".join(html_casos)}</div>'
+
     if tipo == "llegar":
         escalones = []
         for idx, l in enumerate(
