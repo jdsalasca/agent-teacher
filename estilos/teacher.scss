@@ -262,7 +262,7 @@ blockquote {
 .desglose summary::before { content: "▸ "; color: t.$terracota; }
 .desglose details[open] summary::before { content: "▾ "; }
 .desglose ol {
-  margin: 10px 0 2px 18px; font-family: t.$mono; font-size: 14.5px;
+  margin: 10px 0 2px 18px; font-family: t.$serif-texto; font-size: 16.5px;
   line-height: 1.7; color: #3a352c;
 }
 .desglose ol li::marker { color: t.$terracota; }
@@ -314,7 +314,7 @@ th {
   font-family: t.$sans; font-size: 11.5px; letter-spacing: .08em;
   color: t.$suave; border-bottom: 2px solid t.$terracota;
 }
-td:not(:first-child), th:not(:first-child) { text-align: right; font-variant-numeric: tabular-nums; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
 /* ---------- fórmula ---------- */
 .formula {

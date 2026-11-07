@@ -10,7 +10,21 @@
     "parrafos_concepto": 2,
     "palabras": 700
   },
-  "obligatorios": ["objetivo", "prerequisito", "historia", "llegar", "plan", "transferencia"],
+  "obligatorios": ["objetivo", "prerequisito", "dominio", "historia", "llegar", "plan", "transferencia"],
+  "prohibido_meta": [
+    "video",
+    "vídeo",
+    "rúbrica",
+    "rubrica",
+    "entrega",
+    "actividad",
+    "tutor",
+    "docente",
+    "puntaje",
+    "calificación",
+    "lo que te piden",
+    "para aprobar"
+  ],
   "condiciones": [
     {
       "si": "tabla_numerica",
@@ -37,6 +51,11 @@
       "grupo": "concepto",
       "para": "La situación concreta que obliga a inventar el concepto. Sin símbolos todavía."
     },
+    "dominio": {
+      "titulo": "El territorio del tema",
+      "grupo": "concepto",
+      "para": "El vocabulario y la notación que se van a usar, definidos antes de aparecer."
+    },
     "concepto": {
       "titulo": "El concepto",
       "grupo": "concepto",
@@ -60,12 +79,12 @@
     "errores": {
       "titulo": "Cómo no llegar al concepto",
       "grupo": "practica",
-      "para": "Los caminos que parecen razonables y llevan al resultado equivocado."
+      "para": "Los errores de interpretación del concepto o del problema: qué se suele entender mal, por qué es tentador y qué lo corrige."
     },
     "aplicacion": {
       "titulo": "Cómo usar el concepto en el problema",
       "grupo": "practica",
-      "para": "El procedimiento para resolver, aplicado al caso original."
+      "para": "Resolver el problema con el concepto, justificando por qué cada paso es válido."
     },
     "metodos": {
       "titulo": "Diferentes formas de llegar al mismo concepto",
@@ -184,6 +203,13 @@
       "para": "De dónde salió la idea, contado como relato: quién, qué problema tenía, qué se creía antes, qué cambió.",
       "ejemplo": "Riemann tenía 28 años y necesitaba dar una clase para poder enseñar en Gotinga.",
       "error": "Una lista de fechas y nombres. Sin conflicto no hay historia, y sin historia no se recuerda."
+    },
+    "dominio": {
+      "sintaxis": "## Título {dominio}",
+      "forma": "vista",
+      "para": "El vocabulario del tema, definido antes de usarlo: cada símbolo, cada palabra técnica, con su significado y su unidad.",
+      "ejemplo": "Partición: los cortes t₀ < t₁ < … < tₙ. Subintervalo: lo que queda entre dos cortes. Ancho: tᵢ₊₁ − tᵢ.",
+      "error": "Usar Δt durante tres párrafos sin decir qué mide, o llamar «rectángulo» a algo que no se definió."
     },
     "practica": {
       "sintaxis": "## Título {practica}  +  Q: / R:",

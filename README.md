@@ -2,7 +2,7 @@
 
 Convierte un tema en una **guía HTML de estudio** que se puede leer, practicar, repasar y recordar. No es un resumen bonito: es una estructura diseñada con la evidencia sobre aprendizaje humano.
 
-- Menú lateral con cuatro grupos: **Concepto · Historia · Práctica · Transferencia**, y un vocabulario fijo de doce secciones (`{problema}`, `{historia}`, `{concepto}`, `{llegar}`, `{errores}`, `{aplicacion}`, `{metodos}`, `{miradas}`, `{escenarios}`, `{campos}`, `{cierre}`, `{practica}`).
+- Menú lateral con cuatro grupos: **Concepto · Historia · Práctica · Transferencia**, y un vocabulario fijo de trece secciones (`{problema}`, `{dominio}`, `{concepto}`, `{llegar}`, `{errores}`, `{aplicacion}`, `{metodos}`, `{miradas}`, `{escenarios}`, `{campos}`, `{cierre}`, `{practica}`, `{historia}`).
 - Cada sección se **pliega** con un clic, para repasar sin recorrer toda la guía.
 - Escalera **«cómo llegar al concepto»**: seis pasos que derivan la idea de los datos, en vez de anunciarla.
 - Fórmulas con **LaTeX** (KaTeX), figuras incrustadas y tablas.

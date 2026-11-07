@@ -420,18 +420,38 @@ def es_tabla(lineas: list[str], i: int) -> bool:
     )
 
 
+def _celda_numerica(celda: str) -> bool:
+    """Cierto si la celda es una cifra con unidades, no una frase."""
+    v = celda.strip()
+    if not re.search(r"\d", v):
+        return False
+    v = re.sub(r"[${}\\]", "", v)
+    v = re.sub(r"(?<=[\d.,])\s*[A-Za-z%·/]+$", "", v).strip()
+    return bool(v) and re.fullmatch(r"[\d\s.,+\-−/()]+", v) is not None
+
+
 def render_tabla(filas: list[str]) -> str:
     def celdas(linea: str) -> list[str]:
         return [c.strip() for c in linea.strip().strip("|").split("|")]
 
     cabecera = celdas(filas[0])
     cuerpo = [celdas(f) for f in filas[2:]]
+    numericas = []
+    for c in range(len(cabecera)):
+        valores = [f[c] for f in cuerpo if c < len(f) and f[c].strip()]
+        numericas.append(bool(valores) and all(_celda_numerica(v) for v in valores))
+
+    def clase(c: int) -> str:
+        return ' class="num"' if c < len(numericas) and numericas[c] else ""
+
     html_tabla = ["<table>", "<thead><tr>"]
-    html_tabla += [f"<th>{inline(c)}</th>" for c in cabecera]
+    html_tabla += [f"<th{clase(i)}>{inline(c)}</th>" for i, c in enumerate(cabecera)]
     html_tabla.append("</tr></thead><tbody>")
     for fila in cuerpo:
         html_tabla.append(
-            "<tr>" + "".join(f"<td>{inline(c)}</td>" for c in fila) + "</tr>"
+            "<tr>"
+            + "".join(f"<td{clase(i)}>{inline(c)}</td>" for i, c in enumerate(fila))
+            + "</tr>"
         )
     html_tabla.append("</tbody></table>")
     return "".join(html_tabla)
@@ -1265,6 +1285,18 @@ def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
             golpe = marca in l if marca.isupper() else marca in l.lower()
             if golpe:
                 salida.append(("error", f"línea {n}: marcador «{marca}» sin resolver"))
+                break
+
+    for frase in contrato.get("prohibido_meta", []):
+        patron = re.compile(rf"\b{re.escape(frase)}\b", re.I)
+        for n, l in enumerate(lineas, start=1):
+            if patron.search(l):
+                salida.append(
+                    (
+                        "error",
+                        f"línea {n}: «{frase}» habla de la actividad, no del concepto",
+                    )
+                )
                 break
 
     # --- densidad ---

@@ -69,4 +69,12 @@ for falta in (
 ):
     assert falta in mala.stdout, f"no reportó «{falta}»"
 
+# alineación de tablas: solo las cifras van a la derecha
+from teacher import _celda_numerica
+
+for cifra in ("0,4 h", "213,33", "1,75 %", "524 W"):
+    assert _celda_numerica(cifra), cifra
+for texto in ("La rapidez con que cambia una cantidad", "100 + 5(0)^2", "—", "exacto"):
+    assert not _celda_numerica(texto), texto
+
 print("ok: el contrato distingue una guía completa de una floja")

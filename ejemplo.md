@@ -10,6 +10,22 @@ Que puedas leer la factura de una bomba, entender por qué el número del medido
 Multiplicar, dividir y leer una tabla. Si sabes que un bombillo de 100 W encendido dos horas gasta 200 vatios-hora, ya tienes la mitad del camino.
 :::
 
+## El territorio: las palabras que vamos a usar {dominio}
+
+Casi todas las confusiones de este tema son de vocabulario, así que conviene fijarlo antes de tocar números.
+
+| Término | Qué es | Unidad |
+| --- | --- | --- |
+| Tasa | La rapidez con que cambia algo en un instante: la derivada. | W |
+| Acumulado | Lo que se junta al sumar la tasa durante un intervalo: la integral. | W·h |
+| Partición | Los cortes $a=t_0<t_1<\dots<t_n=b$ que dividen el intervalo. | h |
+| Subintervalo | El pedazo entre dos cortes consecutivos. | h |
+| Ancho $\Delta t_i$ | La duración del subintervalo: $t_i-t_{i-1}$. | h |
+| Punto de muestra | El instante dentro del subintervalo donde se mide la altura. | h |
+| Suma de Riemann | La suma de ancho por altura: $\sum f(t_i)\,\Delta t_i$. | W·h |
+
+La palabra que más se malinterpreta es **ancho**: no es el ancho de un dibujo, es cuánto tiempo cubre cada subintervalo. Y «área» es la representación geométrica, no la magnitud: lo que se acumula depende de las unidades de la tasa.
+
 ## La escena {problema}
 
 Son las cinco y cuarenta de la mañana en Suesca y el agua todavía está fría. El agricultor abre la válvula, la bomba carraspea una vez y arranca. Dos horas después la apaga, y esa noche, cuando llega la factura, hace la cuenta que hacemos todos: «ciento veinte vatios por dos horas, doscientos cuarenta».
