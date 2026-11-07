@@ -689,6 +689,8 @@ def convertir(md: str) -> tuple[str, str, str, list[tuple[str, str]]]:
                 mime = {
                     ".svg": "image/svg+xml",
                     ".png": "image/png",
+                    ".gif": "image/gif",
+                    ".webp": "image/webp",
                     ".jpg": "image/jpeg",
                     ".jpeg": "image/jpeg",
                 }.get(archivo.suffix.lower(), "application/octet-stream")
