@@ -75,7 +75,7 @@ Con cuatro pedazos ya se ve el escalón. Con cien, la suma de escalones se confu
 
 En 1854, un joven de 28 años llamado Bernhard Riemann tenía que dar una clase para poder enseñar en Gotinga. Podía escoger entre tres temas y eligió el que menos le convenía —las series trigonométricas— porque era el único que no había preparado. Se encerró a resolverlo y de ahí salió, sin proponérselo, su definición de integral.
 
-El problema era concreto: Cauchy había definido la integral como límite de sumas en 1823, pero exigiendo que la función fuera continua, sin saltos. Fourier acababa de demostrar que casi cualquier función podía escribirse como suma de senos y cosenos, y esas funciones saltan, se rompen y se disparan al infinito. La herramienta de Cauchy no servía para las funciones de Fourier.
+El problema era concreto: Cauchy había definido la integral como límite de sumas en 1823, pero exigiendo que la función fuera continua, sin saltos. Treinta años antes, Fourier había demostrado que casi cualquier función podía escribirse como suma de senos y cosenos, y esas funciones saltan, se rompen y se disparan al infinito. La herramienta de Cauchy no servía para las funciones de Fourier.
 
 Riemann cambió una sola cosa: en vez de exigir continuidad, exigió que las sumas convergieran. Si al hacer los pedazos cada vez más pequeños la suma se estabiliza, hay integral; si no, no la hay. La integral dejó de ser una fórmula y se volvió una prueba de comportamiento.
 
