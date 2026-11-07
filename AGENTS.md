@@ -30,6 +30,8 @@ python teacher.py leccion.md --salida Guia_Tema.html \
 
 **Una guía enseña el concepto, no la tarea.** No menciona videos, rúbricas, entregas, actividades ni tutores: el validador lo marca como error. El vocabulario del tema va antes que cualquier símbolo.
 
+**Cada término del glosario lleva dos párrafos; cada autor que se nombre, ficha con nacionalidad, años y aporte.** El validador rechaza fichas de una línea, soluciones de menos de seis pasos y respuestas de menos de 100 caracteres.
+
 1. **Copiar la estructura del ejemplo, no inventarla.** `ejemplo.md` pasa el validador; una guía nueva debería parecerse.
 2. **Usar el vocabulario de vistas.** `{problema}`, `{historia}`, `{llegar}`… salen de `contrato.json`; un sufijo inventado es un error. `--catalogo` los lista.
 3. **Validar antes de entregar.** `--validar` y corregir los errores. Los avisos se leen; si se ignoran, se sabe por qué.

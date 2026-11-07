@@ -406,7 +406,8 @@ def inline(texto: str) -> str:
     t = re.sub(
         r"==([^=]+)==",
         lambda m: (
-            f'<a class="term" href="#glosario-{slug(m.group(1))}">{m.group(1)}</a>'
+            f'<a class="term" href="#ficha-{slug(m.group(1))}" '
+            f'data-ficha="{slug(m.group(1))}">{m.group(1)}</a>'
         ),
         t,
     )
@@ -468,6 +469,50 @@ def slug(texto: str) -> str:
     s = re.sub(r"<[^>]+>", "", texto)
     s = re.sub(r"[^\w\s-]", "", s, flags=re.UNICODE).strip().lower()
     return re.sub(r"[\s]+", "-", s)[:60] or "seccion"
+
+
+FICHAS: dict[str, dict] = {}
+
+
+def extraer_fichas(md: str) -> dict[str, dict]:
+    """Recoge términos y autores de los bloques ::: glosario y ::: autores."""
+    fichas: dict[str, dict] = {}
+    tipo = None
+    actual = None
+    for l in md.splitlines():
+        d = l.strip()
+        if d.startswith(":::") and d[3:].strip().lower() in ("glosario", "autores"):
+            tipo = d[3:].strip().lower()
+            continue
+        if tipo and d == ":::":
+            tipo = None
+            actual = None
+            continue
+        if tipo and d.startswith("## "):
+            actual = {"nombre": d[3:].strip(), "tipo": tipo, "lineas": []}
+            fichas[slug(actual["nombre"])] = actual
+        elif tipo and actual is not None:
+            actual["lineas"].append(l)
+    return fichas
+
+
+def plantilla_fichas(fichas: dict[str, dict]) -> str:
+    """Contenido de las tarjetas que el popup clona al pulsar un término."""
+    if not fichas:
+        return ""
+    partes = []
+    for clave, f in fichas.items():
+        cuerpo = [l for l in f["lineas"] if l.strip()]
+        corto = cuerpo[0].strip() if cuerpo else ""
+        resto = cuerpo[1:]
+        partes.append(
+            f'<div class="ficha-datos" data-ficha="{clave}">'
+            f'<p class="ficha-nombre">{inline(f["nombre"])}</p>'
+            f'<p class="ficha-corto">{inline(corto)}</p>'
+            f'<div class="ficha-mas">{render_fragmento(resto)}</div>'
+            "</div>"
+        )
+    return f'<template id="fichas">{"".join(partes)}</template>'
 
 
 def figura_html(caption: str, src: str) -> str:
@@ -578,7 +623,7 @@ TABS_CSS: list[str] = []
 def render_bloque(tipo: str, lineas: list[str]) -> str:
     cuerpo_crudo = "\n".join(lineas).strip()
 
-    if tipo == "glosario":
+    if tipo in ("glosario", "autores"):
         entradas = []
         actual = None
         for l in cuerpo_crudo.splitlines():
@@ -592,7 +637,7 @@ def render_bloque(tipo: str, lineas: list[str]) -> str:
             cuerpo = [l for l in e["lineas"] if l.strip()]
             corto = cuerpo[0].strip() if cuerpo else ""
             resto = cuerpo[1:]
-            ident = "glosario-" + slug(e["nombre"])
+            ident = "ficha-" + slug(e["nombre"])
             nombre = inline(e["nombre"])
             if resto:
                 piezas.append(
@@ -818,6 +863,8 @@ def convertir(
 ) -> tuple[str, str, str, list[tuple[str, str, str]]]:
     """Devuelve (titulo, idea, cuerpo_html, secciones[(slug, titulo, vista)])."""
     vistas = vistas or {}
+    FICHAS.clear()
+    FICHAS.update(extraer_fichas(md))
     lineas = md.splitlines()
     titulo = ""
     idea = ""
@@ -1087,6 +1134,60 @@ SCRIPT = """<script>
       b.textContent = plegada ? "+" : "–";
     });
   });
+
+  var plantillaFichas = document.getElementById("fichas");
+  var fichaAbierta = null;
+
+  function cerrarFicha() {
+    if (fichaAbierta) { fichaAbierta.remove(); fichaAbierta = null; }
+  }
+
+  document.querySelectorAll("a.term").forEach(function (enlace) {
+    enlace.addEventListener("click", function (ev) {
+      if (!plantillaFichas) return;
+      var datos = plantillaFichas.content.querySelector(
+        '[data-ficha="' + enlace.dataset.ficha + '"]'
+      );
+      if (!datos) return;
+      ev.preventDefault();
+      ev.stopPropagation();
+      cerrarFicha();
+      var caja = document.createElement("div");
+      caja.className = "ficha-flotante";
+      caja.appendChild(datos.cloneNode(true));
+      document.body.appendChild(caja);
+      var r = enlace.getBoundingClientRect();
+      var ancho = Math.min(360, document.documentElement.clientWidth - 16);
+      caja.style.width = ancho + "px";
+      var izq = Math.min(r.left + window.scrollX, document.documentElement.clientWidth - ancho - 12);
+      caja.style.left = Math.max(8, izq) + "px";
+      caja.style.top = r.bottom + window.scrollY + 8 + "px";
+      var cerrar = document.createElement("button");
+      cerrar.type = "button";
+      cerrar.className = "ficha-cerrar";
+      cerrar.setAttribute("aria-label", "Cerrar");
+      cerrar.textContent = "×";
+      cerrar.addEventListener("click", cerrarFicha);
+      caja.appendChild(cerrar);
+      if (window.renderMathInElement) {
+        window.renderMathInElement(caja, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: false }
+          ],
+          throwOnError: false
+        });
+      }
+      fichaAbierta = caja;
+    });
+  });
+
+  document.addEventListener("click", function (e) {
+    if (fichaAbierta && !fichaAbierta.contains(e.target)) cerrarFicha();
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") cerrarFicha();
+  });
 })();
 </script>"""
 
@@ -1184,6 +1285,7 @@ def construir(
     </p>
   </main>
 </div>
+{plantilla_fichas(FICHAS)}
 {SCRIPT}
 </body>
 </html>
@@ -1367,17 +1469,33 @@ def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
                 )
             )
 
-    # --- glosario: términos desplegables y marcas ==término== ---
+    # --- fichas: términos y autores desplegables, marcas ==ficha== ---
     terminos = set()
-    for b in bloques("glosario"):
+    for b in bloques("glosario") + bloques("autores"):
+        entradas = []
+        actual = None
         for l in b["lineas"]:
             if l.strip().startswith("## "):
-                terminos.add(slug(l.strip()[3:].strip()))
+                actual = {"nombre": l.strip()[3:].strip(), "lineas": []}
+                entradas.append(actual)
+            elif actual is not None:
+                actual["lineas"].append(l)
+        for e in entradas:
+            terminos.add(slug(e["nombre"]))
+            cuerpo = [l for l in e["lineas"] if l.strip()]
+            if len(cuerpo) < 3:
+                salida.append(
+                    (
+                        "error",
+                        f"«{e['nombre']}»: {len(cuerpo)} línea(s) de detalle; "
+                        "cada ficha necesita al menos dos párrafos",
+                    )
+                )
     if vistas("dominio") and len(terminos) < 4:
         salida.append(
             (
                 "error",
-                f"dominio: {len(terminos)} términos en el glosario, mínimo 4 — usa ::: glosario",
+                f"dominio: {len(terminos)} fichas, mínimo 4 — usa ::: glosario o ::: autores",
             )
         )
     for encontrado in re.finditer(r"==([^=]+)==", md):
@@ -1385,10 +1503,41 @@ def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
             salida.append(
                 (
                     "error",
-                    f"«{encontrado.group(1)}» está marcado como término pero no está en el glosario",
+                    f"«{encontrado.group(1)}» está marcado pero no tiene ficha en el glosario",
                 )
             )
             break
+
+    # --- ejercicios: solución desarrollada ---
+    for b in bloques("ejercicio"):
+        solucion = []
+        dentro = False
+        for l in b["lineas"]:
+            if l.strip().startswith("## "):
+                dentro = l.strip()[3:].strip().lower().startswith("soluci")
+                continue
+            if dentro and l.strip():
+                solucion.append(l)
+        if len(solucion) < 6:
+            salida.append(
+                (
+                    "error",
+                    f"ejercicio (línea {b['linea']}): solución de {len(solucion)} líneas, "
+                    "mínimo 6 — desarróllala paso a paso",
+                )
+            )
+
+    # --- respuestas: que expliquen, no que contesten ---
+    for n, l in enumerate(md.splitlines(), start=1):
+        if l.strip().startswith("R:"):
+            texto = l.strip()[2:].strip()
+            if len(texto) < 100:
+                salida.append(
+                    (
+                        "error",
+                        f"línea {n}: respuesta de {len(texto)} caracteres; desarrolla el porqué",
+                    )
+                )
 
     # --- fórmulas: delimitadores balanceados ---
     for n, l in enumerate(md.splitlines(), start=1):

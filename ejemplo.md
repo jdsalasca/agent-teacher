@@ -17,35 +17,33 @@ Casi todas las confusiones de este tema son de vocabulario, así que conviene fi
 ::: glosario
 ## Tasa
 La rapidez con que cambia una cantidad en un instante.
-Es la derivada de la energía respecto al tiempo. Si la energía se mide en vatios-hora y el tiempo en horas, la tasa se mide en vatios. Una tasa no dice cuánto hay: dice a qué velocidad está cambiando.
+Es la derivada de la energía respecto al tiempo. Si la energía se mide en vatios-hora y el tiempo en horas, la tasa se mide en vatios: no dice cuánto hay, dice a qué velocidad cambia.
+
+En el problema de la bomba, la tasa es la potencia que marca el medidor en cada instante. Por eso arranca en 100 W y termina en 120 W: la energía acumulada crece cada vez más rápido.
 
 ## Acumulado
 Lo que se junta al sumar la tasa durante un intervalo.
-Se mide en vatios-hora y se calcula con una integral. La diferencia con la tasa es la misma que hay entre la velocidad del tablero y los kilómetros del odómetro: una es instantánea, la otra es la suma de todos los instantes.
+Se mide en vatios-hora y se calcula con una integral. La diferencia con la tasa es la que hay entre el velocímetro y el odómetro: uno marca el instante, el otro suma todos los instantes.
 
-## Partición
-Los cortes que dividen el intervalo en pedazos.
-Una partición de $[0,2]$ con cuatro pedazos es el conjunto $0<0{,}5<1<1{,}5<2$. Los cortes no tienen por qué ser equidistantes, aunque en este tema casi siempre lo sean.
+Para calcularlo no se multiplica la tasa final por el tiempo; se suman los aportes de cada tramo, y ese es exactamente el problema que resuelve la suma de Riemann.
 
 ## Subintervalo
 El pedazo de tiempo entre dos cortes consecutivos.
-Se escribe $[t_{i-1},t_i]$ y es la unidad de trabajo de toda la suma. Cada subintervalo aporta un rectángulo, y el conjunto de todos los rectángulos es la aproximación.
+Se escribe $[t_{i-1},t_i]$ y es la unidad de trabajo de toda la suma. Cada subintervalo aporta un rectángulo, y el conjunto de rectángulos es la aproximación.
+
+Su tamaño decide el error: con pedazos de media hora el error es del 2,15 %, y con pedazos de 72 segundos baja al 0,09 %.
 
 ## Ancho
 La duración de un subintervalo, $\Delta t_i=t_i-t_{i-1}$.
-No es el ancho de un dibujo: es cuánto tiempo cubre el pedazo. Multiplicar la altura (vatios) por el ancho (horas) es lo que convierte una potencia en energía.
+No es el ancho de un dibujo: es cuánto tiempo cubre el pedazo. Multiplicar la altura en vatios por el ancho en horas es lo que convierte una potencia en energía.
 
-## Punto de muestra
-El instante del subintervalo donde se mide la altura.
-Puede ser el extremo izquierdo, el derecho, el medio o cualquier otro. Cambiarlo cambia la suma: por eso la definición de integral exige que el resultado no dependa de esa elección.
+Todos los anchos de una partición uniforme valen lo mismo, $2/n$; si la partición no es uniforme, cada subintervalo tiene su propio ancho y la norma toma el mayor.
 
 ## Suma de Riemann
 La suma de ancho por altura, $\sum f(t_i^*)\,\Delta t_i$.
-Es un número finito, calculado con una partición concreta. No es la integral: es una aproximación que se acerca a ella cuando los anchos se hacen pequeños.
+Es un número finito, calculado con una partición concreta. No es la integral: es una aproximación que se le acerca cuando los anchos se hacen pequeños.
 
-## Norma de la partición
-El mayor de los anchos, $\lVert P\rVert=\max_i \Delta t_i$.
-Es el número que se hace tender a cero en la definición de integral. Controla el error de la peor franja, no el promedio.
+El punto de muestra $t_i^*$ puede ser el extremo izquierdo, el derecho o el medio; cambiar esa elección cambia el sesgo de la suma, aunque no su límite.
 :::
 
 Y una advertencia que vale para todo el tema: **área** es la representación geométrica de la suma, no la magnitud. Lo que se acumula depende de las unidades de la tasa. Con vatios, el área es energía.
@@ -210,22 +208,22 @@ Y si quieres ver la aritmética de cada fila, se abre aquí:
 ## Ponte a prueba {practica}
 
 Q: ¿Qué unidades tiene $f(2)$?
-R: Vatios. Es la potencia en ese instante, no una energía.
+R: Vatios. $f(2)$ es la potencia en ese instante, una tasa de consumo; la energía del intervalo es otra cosa y se mide en vatios-hora. Confundir las dos unidades es el error más común del tema.
 
 Q: ¿Por qué un solo pedazo da 200 y no 213,33?
 R: Porque estira la potencia del arranque (100 W) durante dos horas. La bomba terminó en 120, así que la cuenta se queda corta.
 
 Q: ¿Qué es el ancho, en una frase?
-R: El tiempo que cubre cada pedazo: las dos horas divididas entre el número de pedazos.
+R: El tiempo que cubre cada subintervalo: las dos horas divididas entre el número de pedazos. Con 4 pedazos son 0,5 h (30 minutos), y con 100 son 0,02 h (72 segundos). Multiplicar la potencia por ese ancho es lo que produce vatios-hora.
 
 Q: ¿Qué le pasa al error si duplicas los pedazos?
-R: Se reduce a la mitad, porque se comporta como 1/n.
+R: Se reduce a la mitad, aproximadamente, porque el error de la suma por izquierda se comporta como $1/n$. Pasar de 50 a 100 pedazos lleva el error de 0,40 a 0,20 W·h; duplicar los pedazos divide el error por dos.
 
 Q: ¿La suma se acerca por arriba o por abajo?
 R: Por abajo, porque toma la altura en el extremo izquierdo y la función crece. Por la derecha se acercaría por arriba.
 
 Q: ¿Y si la bomba arrancara en 120 y bajara a 100?
-R: La suma por izquierda pasaría a sobreestimar. El método no cambia; cambia el signo del error.
+R: La suma por izquierda pasaría a sobreestimar, porque el valor más alto estaría al inicio de cada tramo. El método y la fórmula no cambian: cambia el signo del error, y la integral sigue siendo la misma.
 
 ## Para que no se te olvide {cierre}
 

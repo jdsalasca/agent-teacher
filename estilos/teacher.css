@@ -494,11 +494,62 @@ blockquote {
   color: inherit;
   text-decoration: none;
   border-bottom: 1.5px dotted #b4552f;
+  cursor: pointer;
 }
 
-.term:hover {
+.term:hover, .term:focus-visible {
   color: #b4552f;
   border-bottom-style: solid;
+  outline: none;
+}
+
+.ficha-flotante {
+  position: absolute;
+  z-index: 60;
+  background: #fffdf8;
+  border: 1px solid #e9dccb;
+  border-radius: 12px;
+  box-shadow: 0 26px 44px -26px rgba(60, 45, 20, 0.5);
+  padding: 16px 18px;
+  font-size: 16px;
+  line-height: 1.55;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.ficha-nombre {
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 19px;
+  margin: 0 0 4px;
+}
+
+.ficha-corto {
+  color: #7b6a5b;
+  margin: 0 0 10px;
+}
+
+.ficha-mas p {
+  margin-bottom: 8px;
+}
+
+.ficha-mas p:last-child {
+  margin-bottom: 0;
+}
+
+.ficha-cerrar {
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  border: 0;
+  background: none;
+  font-size: 20px;
+  line-height: 1;
+  color: #7b6a5b;
+  cursor: pointer;
+}
+
+.ficha-cerrar:hover {
+  color: #b4552f;
 }
 
 /* ---------- pestañas ---------- */

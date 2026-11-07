@@ -217,8 +217,24 @@ blockquote {
 .termino .def { color: #4a4438; }
 .termino-mas { margin-top: 8px; padding-top: 8px; border-top: 1px dashed t.$linea; }
 .termino-mas p { font-size: 17px; }
-.term { color: inherit; text-decoration: none; border-bottom: 1.5px dotted t.$terracota; }
-.term:hover { color: t.$terracota; border-bottom-style: solid; }
+.term { color: inherit; text-decoration: none; border-bottom: 1.5px dotted t.$terracota; cursor: pointer; }
+.term:hover, .term:focus-visible { color: t.$terracota; border-bottom-style: solid; outline: none; }
+
+.ficha-flotante {
+  position: absolute; z-index: 60; background: t.$hoja; border: 1px solid t.$linea;
+  border-radius: t.$r-md; box-shadow: 0 26px 44px -26px rgba(60, 45, 20, .5);
+  padding: 16px 18px; font-size: 16px; line-height: 1.55;
+  max-height: 60vh; overflow-y: auto;
+}
+.ficha-nombre { font-family: t.$serif-titulo; font-size: 19px; margin: 0 0 4px; }
+.ficha-corto { color: t.$suave; margin: 0 0 10px; }
+.ficha-mas p { margin-bottom: 8px; }
+.ficha-mas p:last-child { margin-bottom: 0; }
+.ficha-cerrar {
+  position: absolute; top: 4px; right: 8px; border: 0; background: none;
+  font-size: 20px; line-height: 1; color: t.$suave; cursor: pointer;
+}
+.ficha-cerrar:hover { color: t.$terracota; }
 
 /* ---------- pestañas ---------- */
 .pestanas { margin: t.$s3 0 t.$s4; }
