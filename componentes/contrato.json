@@ -180,6 +180,7 @@
     },
     "historia": {
       "sintaxis": "## Título {historia}",
+      "forma": "vista",
       "para": "De dónde salió la idea, contado como relato: quién, qué problema tenía, qué se creía antes, qué cambió.",
       "ejemplo": "Riemann tenía 28 años y necesitaba dar una clase para poder enseñar en Gotinga.",
       "error": "Una lista de fechas y nombres. Sin conflicto no hay historia, y sin historia no se recuerda."

@@ -842,6 +842,8 @@ KATEX = """<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.
 
 SCRIPT = """<script>
 (function () {
+  document.documentElement.classList.add("js");
+
   var obs = new IntersectionObserver(function (entradas) {
     entradas.forEach(function (e) {
       if (e.isIntersecting) e.target.classList.add("visible");
@@ -1137,7 +1139,8 @@ def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
         salida.append(("ok", f"{total} secciones"))
 
     for nombre in contrato["obligatorios"]:
-        hay = bloques(nombre) or vistas(nombre)
+        forma = contrato["componentes"].get(nombre, {}).get("forma", "bloque")
+        hay = vistas(nombre) if forma == "vista" else bloques(nombre)
         if not hay:
             salida.append(
                 (
