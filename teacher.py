@@ -512,9 +512,10 @@ def plantilla_fichas(fichas: dict[str, dict]) -> str:
         return ""
     partes = []
     for clave, f in fichas.items():
-        cuerpo = [l for l in f["lineas"] if l.strip()]
-        corto = cuerpo[0].strip() if cuerpo else ""
-        resto = cuerpo[1:]
+        lineas_f = f["lineas"]
+        primero = next((i for i, l in enumerate(lineas_f) if l.strip()), None)
+        corto = lineas_f[primero].strip() if primero is not None else ""
+        resto = lineas_f[primero + 1 :] if primero is not None else []
         partes.append(
             f'<div class="ficha-datos" data-ficha="{clave}">'
             f'<p class="ficha-nombre">{inline(f["nombre"])}</p>'
@@ -644,9 +645,10 @@ def render_bloque(tipo: str, lineas: list[str]) -> str:
                 actual["lineas"].append(l)
         piezas = []
         for e in entradas:
-            cuerpo = [l for l in e["lineas"] if l.strip()]
-            corto = cuerpo[0].strip() if cuerpo else ""
-            resto = cuerpo[1:]
+            lineas_e = e["lineas"]
+            primero = next((i for i, l in enumerate(lineas_e) if l.strip()), None)
+            corto = lineas_e[primero].strip() if primero is not None else ""
+            resto = lineas_e[primero + 1 :] if primero is not None else []
             ident = "ficha-" + slug(e["nombre"])
             nombre = inline(e["nombre"])
             if resto:
@@ -1554,26 +1556,43 @@ def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
 
     # --- fichas: términos y autores desplegables, marcas ==ficha== ---
     terminos = set()
-    for b in bloques("glosario") + bloques("autores"):
-        entradas = []
-        actual = None
-        for l in b["lineas"]:
-            if l.strip().startswith("## "):
-                actual = {"nombre": l.strip()[3:].strip(), "lineas": []}
-                entradas.append(actual)
-            elif actual is not None:
-                actual["lineas"].append(l)
-        for e in entradas:
-            terminos.add(slug(e["nombre"]))
-            cuerpo = [l for l in e["lineas"] if l.strip()]
-            if len(cuerpo) < 3:
-                salida.append(
-                    (
-                        "error",
-                        f"«{e['nombre']}»: {len(cuerpo)} línea(s) de detalle; "
-                        "cada ficha necesita al menos dos párrafos",
+    for tipo_ficha in ("glosario", "autores"):
+        for b in bloques(tipo_ficha):
+            entradas = []
+            actual = None
+            for l in b["lineas"]:
+                if l.strip().startswith("## "):
+                    actual = {"nombre": l.strip()[3:].strip(), "lineas": []}
+                    entradas.append(actual)
+                elif actual is not None:
+                    actual["lineas"].append(l)
+            for e in entradas:
+                terminos.add(slug(e["nombre"]))
+                cuerpo = [l for l in e["lineas"] if l.strip()]
+                if tipo_ficha == "glosario":
+                    if len(cuerpo) < 4:
+                        salida.append(
+                            (
+                                "error",
+                                f"«{e['nombre']}»: {len(cuerpo)} línea(s); un concepto necesita "
+                                "definición, dos párrafos y un ejemplo",
+                            )
+                        )
+                    elif "**ejemplo" not in " ".join(cuerpo).lower():
+                        salida.append(
+                            (
+                                "error",
+                                f"«{e['nombre']}»: falta un **Ejemplo.** concreto que lo aterrice",
+                            )
+                        )
+                elif len(cuerpo) < 3:
+                    salida.append(
+                        (
+                            "error",
+                            f"«{e['nombre']}»: {len(cuerpo)} línea(s) de detalle; "
+                            "cada ficha de autor necesita al menos dos párrafos",
+                        )
                     )
-                )
     if vistas("dominio") and len(terminos) < 4:
         salida.append(
             (

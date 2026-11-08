@@ -21,11 +21,15 @@ Es la derivada de la energía respecto al tiempo. Si la energía se mide en vati
 
 En el problema de la bomba, la tasa es la potencia que marca el medidor en cada instante. Por eso arranca en 100 W y termina en 120 W: la energía acumulada crece cada vez más rápido.
 
+**Ejemplo.** En la bomba, la potencia pasa de 100 W a 120 W en dos horas: el medidor marca la rapidez con que cambia la energía, no la energía acumulada.
+
 ## Acumulado
 Lo que se junta al sumar la tasa durante un intervalo.
 Se mide en vatios-hora y se calcula con una integral. La diferencia con la tasa es la que hay entre el velocímetro y el odómetro: uno marca el instante, el otro suma todos los instantes.
 
 Para calcularlo no se multiplica la tasa final por el tiempo; se suman los aportes de cada tramo, y ese es exactamente el problema que resuelve la suma de Riemann.
+
+**Ejemplo.** Si la potencia fuera constante en 100 W durante dos horas, el acumulado sería 200 W·h. Como cambia, el acumulado real es 213,33 W·h.
 
 ## Subintervalo
 El pedazo de tiempo entre dos cortes consecutivos.
@@ -33,17 +37,23 @@ Se escribe $[t_{i-1},t_i]$ y es la unidad de trabajo de toda la suma. Cada subin
 
 Su tamaño decide el error: con pedazos de media hora el error es del 2,15 %, y con pedazos de 72 segundos baja al 0,09 %.
 
+**Ejemplo.** En $0<0{,}5<1<1{,}5<2$, el subintervalo $[1;1{,}5]$ dura media hora y su altura es $f(1)=105$ W.
+
 ## Ancho
 La duración de un subintervalo, $\Delta t_i=t_i-t_{i-1}$.
 No es el ancho de un dibujo: es cuánto tiempo cubre el pedazo. Multiplicar la altura en vatios por el ancho en horas es lo que convierte una potencia en energía.
 
 Todos los anchos de una partición uniforme valen lo mismo, $2/n$; si la partición no es uniforme, cada subintervalo tiene su propio ancho y la norma toma el mayor.
 
+**Ejemplo.** Con cuatro tramos, $\Delta t=0{,}5$ h; con cien, $\Delta t=0{,}02$ h, que son 72 segundos.
+
 ## Suma de Riemann
 La suma de ancho por altura, $\sum f(t_i^*)\,\Delta t_i$.
 Es un número finito, calculado con una partición concreta. No es la integral: es una aproximación que se le acerca cuando los anchos se hacen pequeños.
 
 El punto de muestra $t_i^*$ puede ser el extremo izquierdo, el derecho o el medio; cambiar esa elección cambia el sesgo de la suma, aunque no su límite.
+
+**Ejemplo.** Con $n=4$ y puntos por izquierda, $L_4=208{,}75$ W·h; con $n=100$, $L_{100}=213{,}13$.
 :::
 
 Y una advertencia que vale para todo el tema: **área** es la representación geométrica de la suma, no la magnitud. Lo que se acumula depende de las unidades de la tasa. Con vatios, el área es energía.
