@@ -154,12 +154,16 @@ Cuatro momentos cambiaron la manera de calcular el total.
 ::: linea
 ## 1665 — Newton
 Llama fluxión a la rapidez y fluente a la cantidad: su cálculo va del total a la tasa y de vuelta.
+Su ejemplo es el movimiento: dada la velocidad en cada instante, reconstruye la distancia recorrida.
 ## 1823 — Cauchy
 Define la integral como límite de sumas para funciones continuas.
+Su definición funciona para curvas suaves, pero deja fuera las funciones con saltos.
 ## 1854 — Riemann
 Cambia la continuidad por la convergencia: la integral deja de depender de la forma de la curva.
+Con su criterio, una función con un salto es integrable; una que vale 1 en los racionales y 0 en los irracionales, no.
 ## 1875 — Darboux
 Encierra la integral entre la suma inferior y la superior, y da el criterio de integrabilidad.
+Si las dos cotas se pueden acercar tanto como se quiera, la función tiene integral.
 :::
 
 ::: autores

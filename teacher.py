@@ -1662,12 +1662,18 @@ def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
             else:
                 salida.append(("ok", f"fuentes: {len(refs)} referencias con año"))
 
-    # --- línea de tiempo: al menos cuatro hitos con año ---
+    # --- línea de tiempo: al menos cuatro hitos con año y desarrollo ---
     for b in bloques("linea"):
-        hitos = [
-            l.strip()[3:].strip() for l in b["lineas"] if l.strip().startswith("## ")
-        ]
-        con_ano = [h for h in hitos if re.search(r"\d{4}", h)]
+        hitos: list[tuple[str, list[str]]] = []
+        actual = None
+        for l in b["lineas"]:
+            if l.strip().startswith("## "):
+                actual = (l.strip()[3:].strip(), [])
+                hitos.append(actual)
+            elif actual is not None:
+                actual[1].append(l)
+        con_ano = [h for h, _ in hitos if re.search(r"\d{4}", h)]
+        flojos = [h for h, ls in hitos if len([l for l in ls if l.strip()]) < 2]
         if len(con_ano) < 4:
             salida.append(
                 (
@@ -1675,12 +1681,26 @@ def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
                     f"línea de tiempo (línea {b['linea']}): {len(con_ano)} hitos con año, mínimo 4",
                 )
             )
+        elif flojos:
+            salida.append(
+                (
+                    "error",
+                    f"línea de tiempo: {len(flojos)} hito(s) con una sola frase; "
+                    f"desarrolla al menos dos párrafos ({', '.join(flojos[:3])})",
+                )
+            )
         else:
-            salida.append(("ok", f"línea de tiempo: {len(con_ano)} hitos"))
+            salida.append(
+                ("ok", f"línea de tiempo: {len(con_ano)} hitos desarrollados")
+            )
 
     # --- cada enfoque lleva su diagrama ---
     for encabezado, parte in _secciones_md(md):
-        if "{miradas}" in encabezado or "{metodos}" in encabezado:
+        if (
+            "{miradas}" in encabezado
+            or "{metodos}" in encabezado
+            or "{campos}" in encabezado
+        ):
             if "::: pestanas" not in parte:
                 continue
             cuerpo_p = parte.split("::: pestanas", 1)[1]
@@ -1720,17 +1740,17 @@ def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
                     casos.append(actual)
                 elif actual is not None:
                     actual[1].append(l)
-        if len(casos) < 4:
-            salida.append(("error", f"errores: {len(casos)} casos, mínimo 4"))
+        if len(casos) < 6:
+            salida.append(("error", f"errores: {len(casos)} casos, mínimo 6"))
         for titulo, lineas in casos:
             if "![" not in "\n".join(lineas):
                 salida.append(
                     ("error", f"error «{titulo}»: le falta el diagrama del caso")
                 )
                 break
-            if len([l for l in lineas if l.strip()]) < 5:
+            if len([l for l in lineas if l.strip()]) < 7:
                 salida.append(
-                    ("error", f"error «{titulo}»: menos de 5 líneas de desarrollo")
+                    ("error", f"error «{titulo}»: menos de 7 líneas de desarrollo")
                 )
                 break
         else:
