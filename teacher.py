@@ -1196,11 +1196,10 @@ SCRIPT = """<script>
     if (termAbierto) { termAbierto.setAttribute("aria-expanded", "false"); termAbierto = null; }
   }
 
-  document.querySelectorAll(".term").forEach(function (enlace) {
-    enlace.addEventListener("click", function (ev) {
+  function abrirFicha(enlace, ev) {
       if (!plantillaFichas) return;
       var datos = plantillaFichas.content.querySelector(
-        '[data-ficha="' + enlace.dataset.ficha + '"]'
+        '.ficha-datos[data-ficha="' + enlace.dataset.ficha + '"]'
       );
       if (!datos) return;
       ev.preventDefault();
@@ -1235,10 +1234,15 @@ SCRIPT = """<script>
       fichaAbierta = caja;
       termAbierto = enlace;
       enlace.setAttribute("aria-expanded", "true");
-    });
-  });
+  }
 
   document.addEventListener("click", function (e) {
+    var enlace = e.target.closest ? e.target.closest(".term") : null;
+    if (enlace && plantillaFichas) {
+      e.preventDefault();
+      abrirFicha(enlace, e);
+      return;
+    }
     if (fichaAbierta && !fichaAbierta.contains(e.target)) cerrarFicha();
   });
   document.addEventListener("keydown", function (e) {
