@@ -299,6 +299,19 @@ html:not(.js) .term-wrap:focus-within .ficha-inline {
 }
 .ejercicio .solucion[open] summary { margin-bottom: 8px; }
 
+/* ---------- casos de error ---------- */
+.errores { margin: t.$s3 0 t.$s4; display: grid; gap: 14px; }
+.caso-error {
+  background: t.$hoja; border: 1px solid t.$linea; border-left: 4px solid t.$terracota;
+  border-radius: t.$r-md; padding: 16px 18px;
+}
+.caso-error h3 {
+  font-family: t.$serif-titulo; font-size: 20px; margin: 0 0 8px; color: #3a2c22;
+}
+.caso-error p { font-size: 17px; }
+.caso-error figure { margin: 12px 0 6px; }
+.caso-error figure img { max-width: 440px; }
+
 /* ---------- línea de tiempo ---------- */
 .linea { list-style: none; padding: 0; margin: t.$s3 0 t.$s4; position: relative; }
 .linea::before {

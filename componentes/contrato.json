@@ -266,6 +266,13 @@
       "ejemplo": "## 1635 — Cavalieri\nTrata la figura como una pila de indivisibles.",
       "error": "Hitos sin año o sin explicación de qué cambió."
     },
+    "errores": {
+      "sintaxis": "::: errores  (cada caso empieza con ## Título)",
+      "forma": "bloque",
+      "para": "Casos de interpretación errónea: la creencia, por qué atrae, por qué falla, un ejemplo y su diagrama.",
+      "ejemplo": "## Multiplicar por el máximo\n**La creencia:** ... **Por qué atrae:** ... **Por qué falla:** ... ![diagrama](figuras/error_1.png)",
+      "error": "Un caso sin imagen o con una sola frase: eso no enseña a distinguir el error."
+    },
     "fuentes": {
       "sintaxis": "## Fuentes y lecturas {fuentes}",
       "forma": "vista",

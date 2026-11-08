@@ -722,6 +722,40 @@ html:not(.js) .term-wrap:focus-within .ficha-inline {
   margin-bottom: 8px;
 }
 
+/* ---------- casos de error ---------- */
+.errores {
+  margin: 18px 0 26px;
+  display: grid;
+  gap: 14px;
+}
+
+.caso-error {
+  background: #fffdf8;
+  border: 1px solid #e9dccb;
+  border-left: 4px solid #b4552f;
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+
+.caso-error h3 {
+  font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  font-size: 20px;
+  margin: 0 0 8px;
+  color: #3a2c22;
+}
+
+.caso-error p {
+  font-size: 17px;
+}
+
+.caso-error figure {
+  margin: 12px 0 6px;
+}
+
+.caso-error figure img {
+  max-width: 440px;
+}
+
 /* ---------- línea de tiempo ---------- */
 .linea {
   list-style: none;

@@ -724,6 +724,23 @@ def render_bloque(tipo: str, lineas: list[str]) -> str:
             )
         return bloque + "</div>"
 
+    if tipo == "errores":
+        casos = []
+        actual = None
+        for l in cuerpo_crudo.splitlines():
+            if l.strip().startswith("## "):
+                actual = {"titulo": l.strip()[3:].strip(), "lineas": []}
+                casos.append(actual)
+            elif actual is not None:
+                actual["lineas"].append(l)
+        tarjetas = []
+        for c in casos:
+            tarjetas.append(
+                f'<article class="caso-error"><h3>{inline(c["titulo"])}</h3>'
+                f"{render_fragmento(c['lineas'])}</article>"
+            )
+        return f'<div class="errores">{"".join(tarjetas)}</div>'
+
     if tipo == "linea":
         entradas = []
         actual = None
@@ -1691,6 +1708,36 @@ def validar(md: str, contrato: dict) -> list[tuple[str, str]]:
                     "práctica: falta al menos una imagen que acompañe los ejercicios",
                 )
             )
+
+    # --- errores: casos con imagen y desarrollo ---
+    if vistas("errores"):
+        casos: list[tuple[str, list[str]]] = []
+        for b in bloques("errores"):
+            actual = None
+            for l in b["lineas"]:
+                if l.strip().startswith("## "):
+                    actual = (l.strip()[3:].strip(), [])
+                    casos.append(actual)
+                elif actual is not None:
+                    actual[1].append(l)
+        if len(casos) < 4:
+            salida.append(("error", f"errores: {len(casos)} casos, mínimo 4"))
+        for titulo, lineas in casos:
+            if "![" not in "\n".join(lineas):
+                salida.append(
+                    ("error", f"error «{titulo}»: le falta el diagrama del caso")
+                )
+                break
+            if len([l for l in lineas if l.strip()]) < 5:
+                salida.append(
+                    ("error", f"error «{titulo}»: menos de 5 líneas de desarrollo")
+                )
+                break
+        else:
+            if casos:
+                salida.append(
+                    ("ok", f"errores: {len(casos)} casos con imagen y desarrollo")
+                )
 
     # --- historia: relato, no cronología ---
     for s in vistas("historia"):
